@@ -1,0 +1,16 @@
+name: version-bump
+
+on:
+  pull_request:
+    paths:
+      - "skills/**"
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check version bumps
+        run: scripts/check-version-bump.sh origin/${{ github.base_ref }}
