@@ -55,6 +55,27 @@ skillshare list             # show installed skills and versions
 
 `skillshare` reads each `SKILL.md` from `main`, diffs against local state, and writes per-agent files (`~/.claude/skills/<name>/`, etc).
 
+### Browsing via the hub index
+
+This repo ships a [`skillshare-hub.json`](./skillshare-hub.json) catalog so devs can search and install skills without cloning the repo. Point `skillshare search` at the file (locally or via raw URL):
+
+```bash
+skillshare search --hub ./skillshare-hub.json            # browse everything
+skillshare search graphite --hub ./skillshare-hub.json   # filter by keyword
+```
+
+See [the skillshare hub-index docs](https://skillshare.runkids.cc/docs/how-to/sharing/hub-index) for more.
+
+### Regenerating the hub index
+
+Regenerate `skillshare-hub.json` after adding, renaming, or removing a skill, or after editing a skill's `description`:
+
+```bash
+skillshare hub index -s ./
+```
+
+Commit the updated `skillshare-hub.json` alongside the skill changes.
+
 ## Adding a new skill
 
 1. Create `skills/<name>/SKILL.md` with `version: 0.1.0` (or `1.0.0` if it's mature).

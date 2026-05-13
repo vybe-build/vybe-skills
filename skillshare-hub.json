@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-13T17:17:41Z",
+  "sourcePath": "./",
+  "skills": [
+    {
+      "name": "design-doc",
+      "description": "Write technical design documents for complex features, problems, or architectural decisions. Use when the user asks to \"write a design doc\", \"create a design\", \"draft a technical design\", \"design this feature\", or when planning a complex feature that would benefit from written technical design before implementation.",
+      "source": "skills/design-doc"
+    },
+    {
+      "name": "graphite",
+      "description": "Manage stacked PRs using Graphite (gt CLI). Use when implementing multi-part features that should be broken into reviewable chunks, creating PRs, submitting stacks, syncing with trunk, or addressing reviewer feedback. Triggers on requests to \"stack PRs\", \"create a PR\", \"submit changes\", \"sync with main\", or any code implementation that benefits from incremental commits.",
+      "source": "skills/graphite"
+    },
+    {
+      "name": "gt-create",
+      "description": "Create a new stacked branch on top of the current branch, with or without changes",
+      "source": "skills/gt-create"
+    },
+    {
+      "name": "gt-log",
+      "description": "Show the current Graphite stack with PR status",
+      "source": "skills/gt-log"
+    },
+    {
+      "name": "gt-modify",
+      "description": "Commit changes to the current branch using Graphite",
+      "source": "skills/gt-modify"
+    },
+    {
+      "name": "gt-modify-submit",
+      "description": "Commit changes to the current branch and submit the stack to Graphite",
+      "source": "skills/gt-modify-submit"
+    },
+    {
+      "name": "gt-submit",
+      "description": "Submit current branch and its ancestors to Graphite, creating or updating PRs",
+      "source": "skills/gt-submit"
+    },
+    {
+      "name": "gt-sync",
+      "description": "Sync with trunk (main), restack all branches, and clean up merged branches",
+      "source": "skills/gt-sync"
+    },
+    {
+      "name": "pr-update-description",
+      "description": "Update the PR description for the current branch based on its changes. Use when the user asks to \"update the PR description\", \"rewrite the PR body\", \"refresh the PR description\", or wants the description regenerated from current branch changes.",
+      "source": "skills/pr-update-description"
+    },
+    {
+      "name": "review-comments",
+      "description": "Fetch and analyze unresolved PR review comments for the current branch. Use when the user says \"review comments\", \"PR comments\", \"PR feedback\", \"check comments\", \"address feedback\", or wants to see and triage unresolved review comments on their pull request.",
+      "source": "skills/review-comments"
+    },
+    {
+      "name": "review-pr",
+      "description": "Deep multi-dimensional code review for a pull request",
+      "source": "skills/review-pr"
+    },
+    {
+      "name": "update-threads",
+      "description": "Reply to and resolve PR review comment threads with verdicts. Use when the user says \"update threads\", \"resolve threads\", \"reply to comments\", or wants to post decisions (Fixed, Addressed previously, Outdated, Deferred, Dismissed) on PR review threads and resolve them.",
+      "source": "skills/update-threads"
+    }
+  ]
+}
