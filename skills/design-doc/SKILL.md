@@ -1,7 +1,7 @@
 ---
 name: design-doc
-version: 1.0.0
-description: Write technical design documents for complex features, problems, or architectural decisions. Use when the user asks to "write a design doc", "create a design", "draft a technical design", "design this feature", or when planning a complex feature that would benefit from written technical design before implementation.
+version: 1.0.1
+description: Write technical design documents for complex features, problems, or architectural decisions. Use when the user asks to "write a design doc", "create a design", "draft a technical design", "design this feature", or when planning a complex feature that calls for a written technical design before implementation.
 ---
 
 # Design Doc

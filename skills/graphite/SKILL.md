@@ -1,7 +1,7 @@
 ---
 name: graphite
-version: 1.0.0
-description: Manage stacked PRs using Graphite (gt CLI). Use when implementing multi-part features that should be broken into reviewable chunks, creating PRs, submitting stacks, syncing with trunk, or addressing reviewer feedback. Triggers on requests to "stack PRs", "create a PR", "submit changes", "sync with main", or any code implementation that benefits from incremental commits.
+version: 1.0.1
+description: Manage stacked PRs using Graphite (gt CLI). Use when implementing multi-part features that should be broken into reviewable chunks, creating PRs, submitting stacks, syncing with trunk, or addressing reviewer feedback. Triggers on requests to "stack PRs", "create a PR", "submit changes", "sync with main", or any code implementation worth breaking into incremental commits.
 ---
 
 # Graphite Stacked PRs

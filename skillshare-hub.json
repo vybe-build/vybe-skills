@@ -1,16 +1,16 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-16T19:31:31Z",
+  "generatedAt": "2026-05-16T20:08:54Z",
   "sourcePath": "github.com/vybe-build/vybe-skills",
   "skills": [
     {
       "name": "design-doc",
-      "description": "Write technical design documents for complex features, problems, or architectural decisions. Use when the user asks to \"write a design doc\", \"create a design\", \"draft a technical design\", \"design this feature\", or when planning a complex feature that would benefit from written technical design before implementation.",
+      "description": "Write technical design documents for complex features, problems, or architectural decisions. Use when the user asks to \"write a design doc\", \"create a design\", \"draft a technical design\", \"design this feature\", or when planning a complex feature that calls for a written technical design before implementation.",
       "source": "skills/design-doc"
     },
     {
       "name": "graphite",
-      "description": "Manage stacked PRs using Graphite (gt CLI). Use when implementing multi-part features that should be broken into reviewable chunks, creating PRs, submitting stacks, syncing with trunk, or addressing reviewer feedback. Triggers on requests to \"stack PRs\", \"create a PR\", \"submit changes\", \"sync with main\", or any code implementation that benefits from incremental commits.",
+      "description": "Manage stacked PRs using Graphite (gt CLI). Use when implementing multi-part features that should be broken into reviewable chunks, creating PRs, submitting stacks, syncing with trunk, or addressing reviewer feedback. Triggers on requests to \"stack PRs\", \"create a PR\", \"submit changes\", \"sync with main\", or any code implementation worth breaking into incremental commits.",
       "source": "skills/graphite"
     },
     {
@@ -45,7 +45,7 @@
     },
     {
       "name": "pr-update-description",
-      "description": "Update the PR description for the current branch based on its changes. Use when the user asks to \"update the PR description\", \"rewrite the PR body\", \"refresh the PR description\", or wants the description regenerated from current branch changes.",
+      "description": "Update the PR description for the current branch based on its changes. Use when the user asks to \"update the PR description\", \"rewrite the PR body\", \"refresh the PR description\", or wants the description regenerated based on current branch changes.",
       "source": "skills/pr-update-description"
     },
     {

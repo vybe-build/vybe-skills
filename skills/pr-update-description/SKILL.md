@@ -1,7 +1,7 @@
 ---
 name: pr-update-description
-version: 1.0.0
-description: Update the PR description for the current branch based on its changes. Use when the user asks to "update the PR description", "rewrite the PR body", "refresh the PR description", or wants the description regenerated from current branch changes.
+version: 1.0.1
+description: Update the PR description for the current branch based on its changes. Use when the user asks to "update the PR description", "rewrite the PR body", "refresh the PR description", or wants the description regenerated based on current branch changes.
 ---
 
 # Update PR Description
