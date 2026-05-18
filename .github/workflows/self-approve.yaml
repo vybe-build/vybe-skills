@@ -1,0 +1,42 @@
+name: Self Approve PR
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  approve:
+    if: >
+      github.event.issue.pull_request &&
+      (startsWith(github.event.comment.body, '/approve ') || github.event.comment.body == '/approve') &&
+      contains(fromJSON('["MEMBER","OWNER","COLLABORATOR"]'), github.event.comment.author_association)
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Check bypassers team membership
+        env:
+          GH_TOKEN: ${{ secrets.GH_ORG_READ_MEMBERS_TOKEN }}
+          COMMENTER: ${{ github.event.comment.user.login }}
+          ORG: ${{ github.repository_owner }}
+        run: |
+          STATE=$(gh api \
+            "orgs/${ORG}/teams/bypassers/memberships/${COMMENTER}" \
+            --jq '.state' 2>/dev/null || true)
+
+          if [ "$STATE" != "active" ]; then
+            echo "::error::${COMMENTER} is not a member of the bypassers team"
+            exit 1
+          fi
+
+      - name: Approve PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.issue.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          gh api \
+            --method POST \
+            "repos/${REPO}/pulls/${PR_NUMBER}/reviews" \
+            -f event='APPROVE' \
+            -f body='Approved via /approve comment'
