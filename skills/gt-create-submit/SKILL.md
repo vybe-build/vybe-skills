@@ -10,5 +10,5 @@ Create a new stacked branch and submit the stack.
 
 ## Steps
 
-1. Follow the `/gt-create` command
-2. Follow the `/gt-submit` command
+1. Follow the `/gt-create` skill
+2. Follow the `/gt-submit` skill
