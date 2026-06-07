@@ -16,6 +16,5 @@ Create a new commit on the current branch. Automatically restacks descendants.
    b. Stage the appropriate files with `git add <files>` (be specific — avoid `git add .` to prevent accidentally including unwanted files)
    c. Run `git diff --cached --stat` to confirm exactly what's staged
 3. Generate a commit message following conventional commits format (e.g., `feat(VYB-<number>): description` if working on a Linear ticket)
-4. Present the commit message to the user using `AskUserQuestion` with the generated message as the first option (the "Other" option allows them to provide their own)
-5. Run `gt modify --commit --message "<commit message>"` to create a new commit using the user's chosen message
-6. Run `gt log short` to show the updated stack
+4. Run `gt modify --commit --message "<commit message>"` to create a new commit
+5. Run `gt log short` to show the updated stack

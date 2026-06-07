@@ -19,6 +19,11 @@
       "source": "skills/gt-create"
     },
     {
+      "name": "gt-create-submit",
+      "description": "Create a new stacked branch on top of the current branch and submit the stack to Graphite",
+      "source": "skills/gt-create-submit"
+    },
+    {
       "name": "gt-log",
       "description": "Show the current Graphite stack with PR status",
       "source": "skills/gt-log"
