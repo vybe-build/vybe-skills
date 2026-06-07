@@ -1,6 +1,6 @@
 ---
 name: gt-create
-version: 1.0.0
+version: 1.0.1
 description: Create a new stacked branch on top of the current branch, with or without changes
 ---
 

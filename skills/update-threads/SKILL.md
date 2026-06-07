@@ -1,6 +1,6 @@
 ---
 name: update-threads
-version: 1.0.0
+version: 1.0.1
 description: Reply to and resolve PR review comment threads with verdicts. Use when the user says "update threads", "resolve threads", "reply to comments", or wants to post decisions (Fixed, Addressed previously, Outdated, Deferred, Dismissed) on PR review threads and resolve them.
 ---
 

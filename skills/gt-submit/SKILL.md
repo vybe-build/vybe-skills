@@ -1,6 +1,6 @@
 ---
 name: gt-submit
-version: 1.0.0
+version: 1.0.1
 description: Submit current branch and its ancestors to Graphite, creating or updating PRs
 ---
 
