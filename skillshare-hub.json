@@ -19,6 +19,11 @@
       "source": "skills/gt-create"
     },
     {
+      "name": "gt-create-submit",
+      "description": "Create a new stacked branch on top of the current branch and submit the stack to Graphite",
+      "source": "skills/gt-create-submit"
+    },
+    {
       "name": "gt-log",
       "description": "Show the current Graphite stack with PR status",
       "source": "skills/gt-log"
@@ -52,6 +57,21 @@
       "name": "review-comments",
       "description": "Fetch and analyze unresolved PR review comments for the current branch. Use when the user says \"review comments\", \"PR comments\", \"PR feedback\", \"check comments\", \"address feedback\", or wants to see and triage unresolved review comments on their pull request.",
       "source": "skills/review-comments"
+    },
+    {
+      "name": "review-comments-and-fix",
+      "description": "Fetch unresolved PR review comments and immediately apply fixes for any \"Fix now\" items. Use when the user says \"fix comments\", \"fix-comments\", \"review-comments-and-fix\", \"fix review feedback\", \"address comments\", or wants to skip the triage-and-confirm step and jump straight to applying fixes.",
+      "source": "skills/review-comments-and-fix"
+    },
+    {
+      "name": "fix-comments",
+      "description": "Shortcut for /review-comments-and-fix. Fetch unresolved PR review comments and immediately apply fixes for any \"Fix now\" items.",
+      "source": "skills/fix-comments"
+    },
+    {
+      "name": "fix-comments-update-threads",
+      "description": "End-to-end PR review-comment loop — fetch unresolved comments, apply Fix Now fixes, commit/push, then reply and resolve the threads. Use when the user says \"fix comments and update threads\", \"fix and resolve comments\", \"full comment loop\", or wants the entire feedback-to-resolved cycle in one shot.",
+      "source": "skills/fix-comments-update-threads"
     },
     {
       "name": "review-pr",

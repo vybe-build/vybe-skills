@@ -1,6 +1,6 @@
 ---
 name: update-threads
-version: 1.0.0
+version: 1.0.1
 description: Reply to and resolve PR review comment threads with verdicts. Use when the user says "update threads", "resolve threads", "reply to comments", or wants to post decisions (Fixed, Addressed previously, Outdated, Deferred, Dismissed) on PR review threads and resolve them.
 ---
 
@@ -36,7 +36,7 @@ If there are no decisions available in the conversation, tell the user to run th
 
 For any thread with a `Fix now` verdict, confirm the fix was applied before marking it as `Fixed`. If the fix is visible in the current conversation context, that is sufficient. Otherwise, read the current code to verify. If a fix was **not** applied, flag it to the user and skip it.
 
-### 3. Present the plan and ask for confirmation
+### 3. Show the plan
 
 Show a table of what will be posted:
 
@@ -45,16 +45,18 @@ Show a table of what will be posted:
 
 The **Author** column should list the distinct GitHub logins across all comments in the thread (matching what `review-comments` derived). For grouped duplicate threads, list every author from the underlying threads.
 
-Then use the `AskUserQuestion` tool to get confirmation before proceeding. Do not post any replies without explicit user approval.
+Proceed directly to posting — do not ask for user confirmation. The user has already approved by invoking this skill after running `review-comments`.
 
 ### 4. Reply to and resolve each thread
 
-For each confirmed thread, format the reply body and post it, then resolve:
+For each thread, post the reply and resolve it. Issue each command as a **separate** Bash tool call (do not chain with `&&` or `;` — chained commands trigger fresh permission prompts each time), but run them in **parallel** within a single message for performance:
 
 ```bash
 bash <skill-path>/scripts/reply-to-thread.sh <thread_id> "<emoji> **<verdict>** — <reason>"
 bash <skill-path>/scripts/resolve-thread.sh <thread_id>
 ```
+
+Batch all of these calls (across all threads) into a single tool-use message so they execute concurrently.
 
 Use these emoji prefixes:
 

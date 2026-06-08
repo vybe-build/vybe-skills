@@ -1,6 +1,6 @@
 ---
 name: gt-create
-version: 1.0.0
+version: 1.0.1
 description: Create a new stacked branch on top of the current branch, with or without changes
 ---
 
@@ -16,7 +16,6 @@ Create a new branch stacked on top of the current branch.
    b. Stage the appropriate files with `git add <files>` (be specific — avoid `git add .` to prevent accidentally including unwanted files)
    c. Run `git diff --cached --stat` to confirm exactly what's staged
 3. Generate a commit message following conventional commits format (e.g., `feat(VYB-<number>): description` if working on a Linear ticket)
-4. Present the commit message to the user using `AskUserQuestion` with the generated message as the first option (the "Other" option allows them to provide their own)
-5. Run `gt create --message "<commit message>"` to create the branch using the user's chosen message (creates empty branch if no staged changes)
-6. Run `gt sync` to pull latest trunk and restack branches
-7. Run `gt log short` to show the updated stack
+4. Run `gt create --message "<commit message>"` to create the branch (creates empty branch if no staged changes)
+5. Run `gt sync` to pull latest trunk and restack branches
+6. Run `gt log short` to show the updated stack
