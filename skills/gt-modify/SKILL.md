@@ -1,7 +1,8 @@
 ---
 name: gt-modify
-version: 1.0.1
+version: 1.0.2
 description: Commit changes to the current branch using Graphite
+allowed-tools: Bash(git status), Bash(git diff *), Bash(git add *), Bash(gt modify *), Bash(gt log *)
 ---
 
 # Commit to Current Branch

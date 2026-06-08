@@ -1,7 +1,8 @@
 ---
 name: pr-update-description
-version: 1.0.1
+version: 1.0.2
 description: Update the PR description for the current branch based on its changes. Use when the user asks to "update the PR description", "rewrite the PR body", "refresh the PR description", or wants the description regenerated based on current branch changes.
+allowed-tools: Bash(gh pr view *), Bash(gh pr edit *), Bash(gt info *)
 ---
 
 # Update PR Description

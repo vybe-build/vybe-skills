@@ -1,7 +1,8 @@
 ---
 name: gt-create
-version: 1.0.1
+version: 1.0.2
 description: Create a new stacked branch on top of the current branch, with or without changes
+allowed-tools: Bash(git status), Bash(git diff *), Bash(git add *), Bash(gt create *), Bash(gt sync)
 ---
 
 # Create Stacked Branch
