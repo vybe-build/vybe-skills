@@ -1,7 +1,8 @@
 ---
 name: gt-submit
-version: 1.0.1
+version: 1.0.2
 description: Submit current branch and its ancestors to Graphite, creating or updating PRs
+allowed-tools: Bash(git status), Bash(git checkout *), Bash(gt sync), Bash(gt log *), Bash(gt submit), Bash(gt info *), Bash(gh pr edit *)
 ---
 
 # Submit to Graphite

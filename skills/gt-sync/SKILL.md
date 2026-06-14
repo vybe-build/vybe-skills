@@ -1,7 +1,8 @@
 ---
 name: gt-sync
-version: 1.0.0
+version: 1.0.1
 description: Sync with trunk (main), restack all branches, and clean up merged branches
+allowed-tools: Bash(git status), Bash(gt sync), Bash(gt log *)
 ---
 
 # Sync with Graphite

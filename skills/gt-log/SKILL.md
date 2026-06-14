@@ -1,7 +1,8 @@
 ---
 name: gt-log
-version: 1.0.0
+version: 1.0.1
 description: Show the current Graphite stack with PR status
+allowed-tools: Bash(gt log *)
 ---
 
 # Show Graphite Stack
