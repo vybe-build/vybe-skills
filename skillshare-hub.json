@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-06-15T04:12:02Z",
+  "generatedAt": "2026-06-15T04:45:20Z",
   "sourcePath": "./",
   "skills": [
     {
@@ -15,7 +15,7 @@
     },
     {
       "name": "confirm-pr-target",
-      "description": "Confirm the PR resolved for the current branch is the one the user intends before acting on it. Use before waiting on, reviewing, or commenting on a PR — or when the user says \"is this the right PR\", \"confirm the PR\", \"check I'm on the right branch\". Guards against acting on a PR meant for a different workstream.",
+      "description": "Confirm the PR resolved from the current branch is the one the user intends before acting on it (waiting, reviewing, commenting). Guards against acting on a PR for a different workstream.",
       "source": "skills/confirm-pr-target"
     },
     {
