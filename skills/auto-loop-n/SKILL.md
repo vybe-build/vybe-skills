@@ -19,7 +19,7 @@ before starting.
 For each round `i` from 1 to `N`:
 
 1. Announce the round: **"Round i of N"**.
-2. Follow the `/auto-wait-fix-review` skill.
+2. Invoke the `/auto-wait-fix-review` skill.
 3. Decide whether to keep going. **Stop the loop early** if that round reported
    any of:
    - a **timeout** waiting for reviews,

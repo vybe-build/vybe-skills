@@ -12,8 +12,7 @@ has finished (pass or fail) and the automated reviewers have posted their
 verdicts — or until a timeout (default 30 minutes) is reached.
 
 This skill **only waits**. It does not fix comments, reply to threads, or push
-anything. Compose it with other skills (e.g. `/fix-comments-update-threads`) for
-the work that follows.
+anything.
 
 ## How "ready" is defined
 
