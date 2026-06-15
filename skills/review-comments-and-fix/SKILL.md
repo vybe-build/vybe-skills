@@ -1,6 +1,6 @@
 ---
 name: review-comments-and-fix
-version: 1.0.0
+version: 1.0.1
 description: Fetch unresolved PR review comments and immediately apply fixes for any "Fix now" items. Use when the user says "fix comments", "fix-comments", "review-comments-and-fix", "fix review feedback", "address comments", or wants to skip the triage-and-confirm step and jump straight to applying fixes.
 ---
 
@@ -10,7 +10,7 @@ Fetch unresolved PR review comments and immediately apply fixes for valid concer
 
 ## Steps
 
-1. Follow the `/review-comments` skill to fetch and analyze unresolved threads
+1. Invoke the `/review-comments` skill to fetch and analyze unresolved threads
 2. For each thread with a **Fix now** verdict, apply the fix directly to the code — do not pause to ask for confirmation
 3. Report which threads were fixed and which were skipped (with their verdicts)
 
