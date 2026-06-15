@@ -82,6 +82,21 @@
       "name": "update-threads",
       "description": "Reply to and resolve PR review comment threads with verdicts. Use when the user says \"update threads\", \"resolve threads\", \"reply to comments\", or wants to post decisions (Fixed, Addressed previously, Outdated, Deferred, Dismissed) on PR review threads and resolve them.",
       "source": "skills/update-threads"
+    },
+    {
+      "name": "wait-for-reviews",
+      "description": "Wait until a PR's CI checks and automated reviews (Claude, Greptile) have finished, up to a timeout. Use when the user says \"wait for CI\", \"wait for reviews\", \"wait until checks pass\", \"block until the PR is reviewed\", or wants to pause before the next round of work on a PR. Handles only the waiting — compose with fix/review skills for what comes next.",
+      "source": "skills/wait-for-reviews"
+    },
+    {
+      "name": "auto-wait-fix-review",
+      "description": "One hands-off PR review round — wait for CI and automated reviews to finish, apply and resolve review comments, then request a fresh review. Use when the user says \"auto fix round\", \"wait then fix and re-review\", \"run a review round\", or wants one cycle of waiting for feedback, addressing it, and re-requesting review.",
+      "source": "skills/auto-wait-fix-review"
+    },
+    {
+      "name": "auto-loop-n",
+      "description": "Run N automated PR review rounds back-to-back — each round waits for reviews, fixes and resolves comments, and re-requests review. Use when the user says \"auto-loop\", \"loop N times\", \"run 3 review rounds\", or wants the wait/fix/review cycle repeated a set number of times.",
+      "source": "skills/auto-loop-n"
     }
   ]
 }
