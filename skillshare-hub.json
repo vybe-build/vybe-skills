@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "generatedAt": "2026-06-15T04:50:56Z",
-  "sourcePath": "./",
+  "sourcePath": "github.com/vybe-build/vybe-skills",
   "skills": [
     {
       "name": "auto-loop-n",
