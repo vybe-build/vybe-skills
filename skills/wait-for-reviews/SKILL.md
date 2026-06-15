@@ -26,25 +26,24 @@ anything.
 
 ## Workflow
 
-Before blocking — potentially for the full timeout — verify the PR resolved from
-the current branch is the one intended for this conversation (if that context is
-available), and flag it to the user if it looks like it's for a different
-workstream.
+1. Verify the resolved PR is the one intended for this conversation (if that
+   context is available), and flag it to the user if it looks like it's for a
+   different workstream — before blocking, potentially for the full timeout.
 
-Run the wait script **in the background** so the loop polls without occupying the
-agent. The harness re-invokes the agent when the script exits.
+2. Run the wait script **in the background** so the loop polls without occupying
+   the agent. The harness re-invokes the agent when the script exits.
 
-```bash
-bash <skill-path>/scripts/pr-review-wait.sh [PR_NUMBER] [TIMEOUT_SECONDS] [INTERVAL_SECONDS]
-```
+   ```bash
+   bash <skill-path>/scripts/pr-review-wait.sh [PR_NUMBER] [TIMEOUT_SECONDS] [INTERVAL_SECONDS]
+   ```
 
-- With no `PR_NUMBER`, it resolves the PR for the current branch.
-- Defaults: `TIMEOUT_SECONDS=1800` (30 min), `INTERVAL_SECONDS=30`.
-- Use `--once` (`pr-review-wait.sh --once [PR_NUMBER]`) for a single check with no
-  waiting — handy for a quick status read.
+   - With no `PR_NUMBER`, it resolves the PR for the current branch.
+   - Defaults: `TIMEOUT_SECONDS=1800` (30 min), `INTERVAL_SECONDS=30`.
+   - Use `--once` (`pr-review-wait.sh --once [PR_NUMBER]`) for a single check with
+     no waiting — handy for a quick status read.
 
-Set `run_in_background: true` on the Bash tool call. Do **not** poll with the
-agent in the loop; the script already handles the sleep/check cycle.
+   Set `run_in_background: true` on the Bash tool call. Do **not** poll with the
+   agent in the loop; the script already handles the sleep/check cycle.
 
 ## Acting on the result
 

@@ -9,11 +9,13 @@ allowed-tools: Bash(bash .claude/skills/review-comments/scripts/*), Bash(gh pr v
 
 Fetch unresolved PR review comments, read the relevant code, and provide an actionable analysis.
 
-Before fetching, verify the PR resolved from the current branch is the one intended for this conversation (if that context is available), and flag it to the user if it looks like it's for a different workstream.
-
 ## Workflow
 
-### 1. Fetch unresolved comments
+### 1. Verify the target PR
+
+Verify the PR resolved from the current branch is the one intended for this conversation (if that context is available), and flag it to the user if it looks like it's for a different workstream.
+
+### 2. Fetch unresolved comments
 
 Run the fetch script:
 
@@ -23,17 +25,17 @@ bash <skill-path>/scripts/fetch-comments.sh
 
 If there are no unresolved threads, report that and stop.
 
-### 2. Read relevant source files
+### 3. Read relevant source files
 
 For each thread, read the file at the referenced path (use the `file` and `line` fields) to understand the current state of the code. If a thread is marked `is_outdated: true`, note that the code may have changed since the comment was made — still read the current file to check.
 
-### 3. Group duplicate threads
+### 4. Group duplicate threads
 
 Before writing any per-thread analysis, scan all unresolved threads and group duplicates — threads from different authors (e.g. `greptile-apps` and `claude`) raising substantially the same issue on the same file/line or about the same code. Each group will be analyzed and presented as a single entry in both the prose section and the summary table.
 
 A "thread" in the steps below refers to a group from this step (which may contain one or more underlying threads).
 
-### 4. Analyze each thread
+### 5. Analyze each thread
 
 For every (grouped) thread, provide:
 
@@ -53,7 +55,7 @@ For every (grouped) thread, provide:
    - **Defer** — valid concern but out of scope (explain why — e.g. unrelated refactor, risky change, separate feature)
    - **Dismiss** — not a valid concern (explain why — e.g. subjective, incorrect)
 
-### 5. Present a summary table
+### 6. Present a summary table
 
 End with a markdown table:
 
