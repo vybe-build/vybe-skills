@@ -21,7 +21,7 @@ Each `SKILL.md` starts with YAML frontmatter:
 name: graphite
 version: 1.2.0
 description: One-line description used to decide when the skill applies.
-allowed-tools: Bash(gh pr view:*), Read   # optional — Claude Code only
+allowed-tools: Bash(gh pr view *), Read   # optional — Claude Code only
 ---
 
 # Skill body

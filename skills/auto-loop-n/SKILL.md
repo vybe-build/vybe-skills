@@ -1,6 +1,6 @@
 ---
 name: auto-loop-n
-version: 1.0.0
+version: 1.1.0
 description: Run N automated PR review rounds back-to-back — each round waits for reviews, fixes and resolves comments, and re-requests review. Use when the user says "auto-loop", "loop N times", "run 3 review rounds", or wants the wait/fix/review cycle repeated a set number of times.
 ---
 
@@ -14,13 +14,22 @@ Repeat the wait → fix → re-review cycle up to **N** times on the current PR.
 "auto-loop-n 3" → `N = 3`). If the user did not specify a number, ask for one
 before starting.
 
+## Track progress with tasks
+
+Before the first round, create a task for each round (`Round 1 of N` …
+`Round N of N`) so progress is visible across the whole loop. As the loop runs,
+mark the current round's task **in progress** when it starts and **completed**
+when it finishes. If the loop stops early, leave the remaining rounds' tasks
+incomplete so the report reflects what actually ran.
+
 ## Loop
 
 For each round `i` from 1 to `N`:
 
-1. Announce the round: **"Round i of N"**.
+1. Announce the round: **"Round i of N"** and mark its task **in progress**.
 2. Invoke the `/auto-wait-fix-review` skill.
-3. Decide whether to keep going. **Stop the loop early** if that round reported
+3. Mark the round's task **completed**.
+4. Decide whether to keep going. **Stop the loop early** if that round reported
    any of:
    - a **timeout** waiting for reviews,
    - a **lookup error** (no PR / `gh` not authenticated), or

@@ -1,6 +1,6 @@
 ---
 name: wait-for-reviews
-version: 1.0.0
+version: 1.1.0
 description: Wait until a PR's CI checks and automated reviews (Claude, Greptile) have finished, up to a timeout. Use when the user says "wait for CI", "wait for reviews", "wait until checks pass", "block until the PR is reviewed", or wants to pause before the next round of work on a PR. Handles only the waiting — compose with fix/review skills for what comes next.
 allowed-tools: Bash(bash .claude/skills/wait-for-reviews/scripts/*), Bash(gh pr view *), Bash(gh repo view *)
 ---
@@ -26,20 +26,24 @@ anything.
 
 ## Workflow
 
-Run the wait script **in the background** so the loop polls without occupying the
-agent. The harness re-invokes the agent when the script exits.
+1. Verify the resolved PR is the one intended for this conversation (if that
+   context is available), and flag it to the user if it looks like it's for a
+   different workstream — before blocking, potentially for the full timeout.
 
-```bash
-bash <skill-path>/scripts/pr-review-wait.sh [PR_NUMBER] [TIMEOUT_SECONDS] [INTERVAL_SECONDS]
-```
+2. Run the wait script **in the background** so the loop polls without occupying
+   the agent. The harness re-invokes the agent when the script exits.
 
-- With no `PR_NUMBER`, it resolves the PR for the current branch.
-- Defaults: `TIMEOUT_SECONDS=1800` (30 min), `INTERVAL_SECONDS=30`.
-- Use `--once` (`pr-review-wait.sh --once [PR_NUMBER]`) for a single check with no
-  waiting — handy for a quick status read.
+   ```bash
+   bash <skill-path>/scripts/pr-review-wait.sh [PR_NUMBER] [TIMEOUT_SECONDS] [INTERVAL_SECONDS]
+   ```
 
-Set `run_in_background: true` on the Bash tool call. Do **not** poll with the
-agent in the loop; the script already handles the sleep/check cycle.
+   - With no `PR_NUMBER`, it resolves the PR for the current branch.
+   - Defaults: `TIMEOUT_SECONDS=1800` (30 min), `INTERVAL_SECONDS=30`.
+   - Use `--once` (`pr-review-wait.sh --once [PR_NUMBER]`) for a single check with
+     no waiting — handy for a quick status read.
+
+   Set `run_in_background: true` on the Bash tool call. Do **not** poll with the
+   agent in the loop; the script already handles the sleep/check cycle.
 
 ## Acting on the result
 
