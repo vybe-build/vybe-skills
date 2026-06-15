@@ -1,6 +1,6 @@
 ---
 name: wait-for-reviews
-version: 1.0.0
+version: 1.1.0
 description: Wait until a PR's CI checks and automated reviews (Claude, Greptile) have finished, up to a timeout. Use when the user says "wait for CI", "wait for reviews", "wait until checks pass", "block until the PR is reviewed", or wants to pause before the next round of work on a PR. Handles only the waiting — compose with fix/review skills for what comes next.
 allowed-tools: Bash(bash .claude/skills/wait-for-reviews/scripts/*), Bash(gh pr view *), Bash(gh repo view *)
 ---
@@ -26,25 +26,10 @@ anything.
 
 ## Confirm the target PR
 
-Before blocking — potentially for the full timeout — make sure you are about to
-wait on the **right** PR. With no `PR_NUMBER`, the script resolves the PR for the
-current branch, which may not be the one the user means if they have switched
-branches or are juggling more than one workstream.
-
-Run a quick lookup first and check it against the conversation:
-
-```bash
-gh pr view --json number,title,headRefName,url
-```
-
-- Confirm the resolved branch and PR title match the workstream this conversation
-  has been about. If the user named a specific PR number or feature, verify it
-  lines up.
-- If it looks like a **different workstream** — the branch is unrelated to recent
-  work, the title is for another feature, or no PR exists for the current branch
-  — stop and confirm the intended PR with the user (or have them pass an explicit
-  `PR_NUMBER`) before waiting. Do not block on a PR the user did not intend.
-- Once the target is confirmed, proceed to the wait below.
+Before blocking — potentially for the full timeout — invoke the
+`/confirm-pr-target` skill to make sure you are about to wait on the PR the user
+intends, not one for a different workstream. Once confirmed, proceed to the wait
+below.
 
 ## Workflow
 
