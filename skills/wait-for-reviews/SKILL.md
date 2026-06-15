@@ -24,6 +24,28 @@ anything.
    comment of each kind is checked, since reviews can be requested repeatedly. A
    reviewer that was never triggered is treated as done.
 
+## Confirm the target PR
+
+Before blocking — potentially for the full timeout — make sure you are about to
+wait on the **right** PR. With no `PR_NUMBER`, the script resolves the PR for the
+current branch, which may not be the one the user means if they have switched
+branches or are juggling more than one workstream.
+
+Run a quick lookup first and check it against the conversation:
+
+```bash
+gh pr view --json number,title,headRefName,url
+```
+
+- Confirm the resolved branch and PR title match the workstream this conversation
+  has been about. If the user named a specific PR number or feature, verify it
+  lines up.
+- If it looks like a **different workstream** — the branch is unrelated to recent
+  work, the title is for another feature, or no PR exists for the current branch
+  — stop and confirm the intended PR with the user (or have them pass an explicit
+  `PR_NUMBER`) before waiting. Do not block on a PR the user did not intend.
+- Once the target is confirmed, proceed to the wait below.
+
 ## Workflow
 
 Run the wait script **in the background** so the loop polls without occupying the
