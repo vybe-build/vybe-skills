@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-06-15T04:45:20Z",
+  "generatedAt": "2026-06-15T04:50:56Z",
   "sourcePath": "./",
   "skills": [
     {
@@ -12,11 +12,6 @@
       "name": "auto-wait-fix-review",
       "description": "One hands-off PR review round — wait for CI and automated reviews to finish, apply and resolve review comments, then request a fresh review. Use when the user says \"auto fix round\", \"wait then fix and re-review\", \"run a review round\", or wants one cycle of waiting for feedback, addressing it, and re-requesting review.",
       "source": "skills/auto-wait-fix-review"
-    },
-    {
-      "name": "confirm-pr-target",
-      "description": "Confirm the PR resolved from the current branch is the one the user intends before acting on it (waiting, reviewing, commenting). Guards against acting on a PR for a different workstream.",
-      "source": "skills/confirm-pr-target"
     },
     {
       "name": "design-doc",

@@ -24,14 +24,12 @@ anything.
    comment of each kind is checked, since reviews can be requested repeatedly. A
    reviewer that was never triggered is treated as done.
 
-## Confirm the target PR
-
-Before blocking — potentially for the full timeout — invoke the
-`/confirm-pr-target` skill to make sure you are about to wait on the PR the user
-intends, not one for a different workstream. Once confirmed, proceed to the wait
-below.
-
 ## Workflow
+
+Before blocking — potentially for the full timeout — verify the PR resolved from
+the current branch is the one intended for this conversation (if that context is
+available), and flag it to the user if it looks like it's for a different
+workstream.
 
 Run the wait script **in the background** so the loop polls without occupying the
 agent. The harness re-invokes the agent when the script exits.
