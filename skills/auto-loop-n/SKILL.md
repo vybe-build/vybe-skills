@@ -1,6 +1,6 @@
 ---
 name: auto-loop-n
-version: 1.1.0
+version: 1.1.1
 description: Run N automated PR review rounds back-to-back — each round waits for reviews, fixes and resolves comments, and re-requests review. Use when the user says "auto-loop", "loop N times", "run 3 review rounds", or wants the wait/fix/review cycle repeated a set number of times.
 ---
 
@@ -32,7 +32,8 @@ For each round `i` from 1 to `N`:
 4. Decide whether to keep going. **Stop the loop early** if that round reported
    any of:
    - a **timeout** waiting for reviews,
-   - a **lookup error** (no PR / `gh` not authenticated), or
+   - a **lookup error** (no PR / `gh` not authenticated),
+   - an **outstanding CI failure** the round could not fix, or
    - **convergence** — no comments were left to fix.
 
    Otherwise continue to the next round.
