@@ -1,6 +1,6 @@
 ---
 name: auto-loop-n
-version: 1.1.0
+version: 1.1.1
 description: Run N automated PR review rounds back-to-back — each round waits for reviews, fixes and resolves comments, and re-requests review. Use when the user says "auto-loop", "loop N times", "run 3 review rounds", or wants the wait/fix/review cycle repeated a set number of times.
 ---
 
