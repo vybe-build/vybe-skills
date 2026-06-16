@@ -32,7 +32,8 @@ For each round `i` from 1 to `N`:
 4. Decide whether to keep going. **Stop the loop early** if that round reported
    any of:
    - a **timeout** waiting for reviews,
-   - a **lookup error** (no PR / `gh` not authenticated), or
+   - a **lookup error** (no PR / `gh` not authenticated),
+   - an **outstanding CI failure** the round could not fix, or
    - **convergence** — no comments were left to fix.
 
    Otherwise continue to the next round.

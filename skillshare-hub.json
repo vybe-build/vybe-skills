@@ -10,7 +10,7 @@
     },
     {
       "name": "auto-wait-fix-review",
-      "description": "One hands-off PR review round — wait for CI and automated reviews to finish, apply and resolve review comments, then request a fresh review. Use when the user says \"auto fix round\", \"wait then fix and re-review\", \"run a review round\", or wants one cycle of waiting for feedback, addressing it, and re-requesting review.",
+      "description": "One hands-off PR review round — wait for CI and automated reviews to finish, fix any CI failures, apply and resolve review comments, then request a fresh review. Use when the user says \"auto fix round\", \"wait then fix and re-review\", \"run a review round\", or wants one cycle of waiting for feedback, addressing it, and re-requesting review.",
       "source": "skills/auto-wait-fix-review"
     },
     {
