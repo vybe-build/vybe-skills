@@ -1,6 +1,6 @@
 ---
 name: review-pr
-version: 1.0.0
+version: 1.1.0
 description: Deep multi-dimensional code review for a pull request
 allowed-tools: Bash(gh issue view:*), Bash(gh search:*), Bash(gh issue list:*), Bash(gh pr comment:*), Bash(gh pr diff:*), Bash(gh pr view:*), Bash(gh pr list:*), Bash(gh api:*), Bash(bash .claude/skills/review-pr/scripts/*), Bash(echo *), Bash(date *), Bash(jq *), Bash(git fetch *), Bash(git show *), Bash(git diff *), Bash(git log *), Bash(git branch --list *), Write(.claude-scratch/*), Write(/.claude-scratch/*), Write(//**/.claude-scratch/*)
 ---
@@ -42,7 +42,7 @@ Follow these steps precisely:
       bash .claude/skills/review-pr/scripts/fetch-pr-diff.sh <PR_NUMBER> .claude-scratch/pr-diff.txt
       ```
 
-4. Launch **all 7** review agents in a **single parallel call**. Each agent's prompt should include the PR summary (from step 3a), list of CLAUDE.md files (from step 2), existing review threads (from step 3b), and the instruction to read the diff from `.claude-scratch/pr-diff.txt` using the Read tool. Each agent MUST return:
+4. Launch **all 8** review agents in a **single parallel call**. Each agent's prompt should include the PR summary (from step 3a), list of CLAUDE.md files (from step 2), existing review threads (from step 3b), and the instruction to read the diff from `.claude-scratch/pr-diff.txt` using the Read tool. Each agent MUST return:
    - A score from 0 to 5 for their category (0 = catastrophic, 5 = perfect)
    - A list of findings, each marked as either 🚫 BLOCKING or ⚠️ NON-BLOCKING
    - For each finding: brief justification with specific file path and line number references
@@ -50,7 +50,7 @@ Follow these steps precisely:
    - For each finding: whether it is a **line-level** finding (tied to a specific line in the diff) or a **file-level** finding (about the file as a whole, or about a line outside the diff region)
    - Any additional issues noticed outside their checklist
 
-   The 7 agents are:
+   The 8 agents are:
 
    a. **🔒 Security (a.k.a. Sentinel)**: Audit for XSS, injection (SQL/command/path traversal), auth bypass, missing permission checks (`withAuth`/`withApp`/`checkPermission`), secrets or credentials in code, CORS/CSRF issues, insecure dependencies, information leakage in error messages or logs, and any OWASP Top 10 violations. **Bugs:** logic flaws that could be exploited (e.g. inverted permission checks, missing authorization on branching paths, TOCTOU races). Flag anything else security-relevant you notice.
 
@@ -58,7 +58,7 @@ Follow these steps precisely:
 
    c. **⚡ Performance (a.k.a. Nitro)**: Check for N+1 queries, missing database indexes, unnecessary React re-renders (missing memoization, unstable references in deps), large bundle imports that should be lazy-loaded or tree-shaken, missing pagination on list endpoints, memory leaks (unremoved event listeners, unclosed subscriptions), blocking operations on hot paths, missing caching opportunities, and inefficient algorithms. **Observability:** missing OpenTelemetry spans on DB queries or external API calls (see `src/lib-server/otel.ts`), operations that would be hard to profile without instrumentation, missing tracing on slow paths. **Bugs:** race conditions, infinite loops/re-renders, stale closures capturing outdated values, async operations that never resolve. Flag anything else performance-relevant you notice.
 
-   d. **🧹 Code Hygiene (a.k.a. Surgeon)**: Check for DRY violations, single-responsibility principle violations, files exceeding 300 lines, functions exceeding 50 lines, unclear naming, dead code, circular dependencies, layer violations (client importing from server or vice versa), magic numbers/strings, deeply nested logic (>3 levels), poor modularization, and DDD boundary violations. **Bugs:** off-by-one errors, wrong boolean logic or inverted conditions, incorrect equality checks (== vs ===), missing early returns, copy-paste errors where values weren't updated. Flag anything else code-quality-relevant you notice.
+   d. **🧹 Code Hygiene (a.k.a. Surgeon)**: Check for DRY violations, single-responsibility principle violations, files exceeding 300 lines, functions exceeding 50 lines, unclear naming, circular dependencies, layer violations (client importing from server or vice versa), magic numbers/strings, deeply nested logic (>3 levels), poor modularization, and DDD boundary violations. **Bugs:** off-by-one errors, wrong boolean logic or inverted conditions, incorrect equality checks (== vs ===), missing early returns, copy-paste errors where values weren't updated. Flag anything else code-quality-relevant you notice.
 
    e. **🧪 Test Quality (a.k.a. Chemist)**: Verify tests exist for new features/logic, edge cases are covered, mocks use shared factories from `test/mocks/` per CLAUDE.md (not inline `jest.mock()` factories for logger/access/prisma/otel), assertions are meaningful (not just `toBeDefined`), tests are isolated, test names clearly describe behavior, integration tests exist for API routes, and pure functions are NOT over-mocked. **Bugs:** tests that pass but don't actually verify the behavior they claim to (e.g. asserting on mock return values instead of real logic), tests that would still pass if the feature broke. Flag anything else test-quality-relevant you notice.
 
@@ -66,9 +66,11 @@ Follow these steps precisely:
 
    g. **📋 CLAUDE.md Compliance (a.k.a. Sheriff)**: Verify all rules from the root and directory-level CLAUDE.md files are followed: file/directory naming (kebab-case), component naming (PascalCase), hook naming (camelCase with `use` prefix), constants (UPPER_SNAKE_CASE), auth wrappers on API routes, `logger` instead of `console.log`, tracing consideration, error handling with Zod + proper HTTP status codes, comment style (minimal, only when non-obvious), shared types (no duplication between client/server), testing requirements met, color/typography system used, and Graphite conventions followed. Flag anything else CLAUDE.md-relevant you notice.
 
+   h. **💀 Dead Code (a.k.a. Reaper)**: Hunt for code introduced or left behind by this PR that is never reached or used. Focus on the cross-module and semantic cases a linter/typechecker won't catch: exports that nothing imports, functions/components/hooks/constants defined but never referenced anywhere in the codebase, unreachable code after `return`/`throw`/`break`, branches that can never execute (dead conditionals, feature flags that are now always-on or always-off), commented-out code blocks, orphaned files no longer imported by anything, leftover scaffolding or debug code, and symbols referenced only by their own (now-removed) call sites. Also flag dead dependencies added to `package.json` but never used, and exports kept "just in case" with no consumer. **Bugs:** a "dead" branch that is actually reachable (indicating an upstream logic error), or removed code whose remaining references will break. When uncertain whether a symbol is truly unused, search the codebase before flagging — public API surface and entrypoints may be intentionally unreferenced internally. Flag anything else dead-code-relevant you notice.
+
 5. Use a Haiku agent to repeat the eligibility check from step 1 (closed or automated/trivial), to make sure the pull request is still eligible for code review.
 
-6. Synthesize all agent results into the output format below. Calculate the overall score as the simple average of all 7 category scores. Apply verdict logic: 🚫 DO NOT MERGE if ANY 🚫 BLOCKING issue exists across any category. ✅ READY TO MERGE otherwise.
+6. Synthesize all agent results into the output format below. Calculate the overall score as the simple average of all 8 category scores. Apply verdict logic: 🚫 DO NOT MERGE if ANY 🚫 BLOCKING issue exists across any category. ✅ READY TO MERGE otherwise.
 
 7. Post the review using the helper scripts:
 
@@ -170,6 +172,7 @@ For the top-level PR comment, use this format precisely:
 | 🧪 Tests | X/5 | ✅ / ... |
 | 🎨 Design System | X/5 | ✅ / ... |
 | 📋 CLAUDE.md | X/5 | ✅ / ... |
+| 💀 Dead Code | X/5 | ✅ / ... |
 
 ---
 
@@ -224,8 +227,9 @@ Or, if no issues found at all:
 | 🧪 Tests | 5/5 | ✅ |
 | 🎨 Design System | 5/5 | ✅ |
 | 📋 CLAUDE.md | 5/5 | ✅ |
+| 💀 Dead Code | 5/5 | ✅ |
 
-No issues found. Deep review across security, performance, error handling, code hygiene, tests, design system, and CLAUDE.md compliance.
+No issues found. Deep review across security, performance, error handling, code hygiene, tests, design system, CLAUDE.md compliance, and dead code.
 
 🤖 Generated with [Claude Code](https://claude.ai/code) · <sub>Last updated: <!-- timestamp -->YYYY-MM-DD HH:MM UTC<!-- /timestamp --></sub>
 
