@@ -1,6 +1,6 @@
 ---
 name: auto-wait-fix-review
-version: 1.1.0
+version: 1.2.0
 description: One hands-off PR review round — wait for CI and automated reviews to finish, fix any CI failures, apply and resolve review comments, then request a fresh review. Use when the user says "auto fix round", "wait then fix and re-review", "run a review round", or wants one cycle of waiting for feedback, addressing it, and re-requesting review.
 ---
 
@@ -30,7 +30,8 @@ address it, then ask for the next review.
      1. Fetch the failing check's logs to diagnose it. For GitHub Actions
         checks, `gh run view <run-id> --log-failed` (the run id is in the
         check's `link`); otherwise open the `link`.
-     2. Apply fixes, then stage by explicit path, commit, and push.
+     2. Apply fixes, then invoke the `/commit-and-push` skill to stage by
+        explicit path, commit, and push.
      3. **Skip** a check you can't act on — a flaky or required external check,
         or one failing for reasons unrelated to this PR's changes. Note it in
         the report rather than guessing at a fix.
