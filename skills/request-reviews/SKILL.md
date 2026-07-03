@@ -1,8 +1,8 @@
 ---
 name: request-reviews
-version: 1.1.0
+version: 1.1.1
 description: Post comments to the current PR to trigger re-reviews from Claude and Greptile. Use when the user says "request reviews", "re-review", "trigger reviews", or wants reviewers to look at the PR again.
-allowed-tools: Bash(bash .claude/skills/request-reviews/scripts/*), Bash(gh pr view *)
+allowed-tools: Bash(bash *.claude/skills/request-reviews/scripts/*), Bash(gh pr view *)
 ---
 
 # Request Reviews

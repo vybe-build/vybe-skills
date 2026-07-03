@@ -1,20 +1,18 @@
 ---
 name: review-pr
-version: 1.1.0
+version: 1.1.1
 description: Deep multi-dimensional code review for a pull request
-allowed-tools: Bash(gh issue view:*), Bash(gh search:*), Bash(gh issue list:*), Bash(gh pr comment:*), Bash(gh pr diff:*), Bash(gh pr view:*), Bash(gh pr list:*), Bash(gh api:*), Bash(bash .claude/skills/review-pr/scripts/*), Bash(echo *), Bash(date *), Bash(jq *), Bash(git fetch *), Bash(git show *), Bash(git diff *), Bash(git log *), Bash(git branch --list *), Write(.claude-scratch/*), Write(/.claude-scratch/*), Write(//**/.claude-scratch/*)
+allowed-tools: Bash(gh issue view:*), Bash(gh search:*), Bash(gh issue list:*), Bash(gh pr comment:*), Bash(gh pr diff:*), Bash(gh pr view:*), Bash(gh pr list:*), Bash(gh api:*), Bash(bash *.claude/skills/review-pr/scripts/*), Bash(echo *), Bash(date *), Bash(jq *), Bash(git fetch *), Bash(git show *), Bash(git diff *), Bash(git log *), Bash(git branch --list *), Write(.claude-scratch/*), Write(/.claude-scratch/*), Write(//**/.claude-scratch/*)
 ---
 
 Provide a deep, multi-dimensional code review for the given pull request.
 
 Follow these steps precisely:
 
-**Important:** When invoking helper scripts, always use the **relative** path `.claude/skills/review-pr/scripts/...` (not an absolute path). The allowed-tools patterns use relative paths, so absolute paths will be denied.
-
 0. **Signal that the review is starting.** Check if a `--trigger-comment-id=` argument was passed in the prompt. Parse the value after the `=` sign. If it is non-empty, react with 👀 to acknowledge the request:
 
    ```bash
-   bash .claude/skills/review-pr/scripts/react-to-comment.sh "<COMMENT_ID>" eyes
+   bash <skill-path>/scripts/react-to-comment.sh "<COMMENT_ID>" eyes
    ```
 
    Save the comment ID for use in the final step. If no `--trigger-comment-id` was provided or the value is empty (e.g. the review was triggered by a PR open event), skip this step.
@@ -31,7 +29,7 @@ Follow these steps precisely:
    b. Fetch all existing review threads (resolved and unresolved) on the PR:
 
       ```bash
-      bash .claude/skills/review-pr/scripts/fetch-review-threads.sh <PR_NUMBER>
+      bash <skill-path>/scripts/fetch-review-threads.sh <PR_NUMBER>
       ```
 
       This returns a compact JSON array with each thread's file, line, resolution status, and a summary of the initial comment. Pass this to the review agents in step 4 so they can avoid re-raising issues that have already been discussed or resolved.
@@ -39,7 +37,7 @@ Follow these steps precisely:
    c. Fetch the PR diff to a file:
 
       ```bash
-      bash .claude/skills/review-pr/scripts/fetch-pr-diff.sh <PR_NUMBER> .claude-scratch/pr-diff.txt
+      bash <skill-path>/scripts/fetch-pr-diff.sh <PR_NUMBER> .claude-scratch/pr-diff.txt
       ```
 
 4. Launch **all 8** review agents in a **single parallel call**.
@@ -109,7 +107,7 @@ Follow these steps precisely:
    b. **Post inline and file-level comments.** Run:
 
       ```bash
-      bash .claude/skills/review-pr/scripts/post-review-comments.sh <PR_NUMBER> .claude-scratch/review-comments.json
+      bash <skill-path>/scripts/post-review-comments.sh <PR_NUMBER> .claude-scratch/review-comments.json
       ```
 
       Capture the JSON output. The script automatically:
@@ -121,14 +119,14 @@ Follow these steps precisely:
    c. **Write and post the summary comment.** Write the scorecard to `.claude-scratch/review-summary.md` using the format below. Replace the `YYYY-MM-DD HH:MM UTC` timestamp placeholder with the current UTC time (get it via `date -u '+%Y-%m-%d %H:%M UTC'`). If any findings were skipped (from the `skipped_details` in step 7b), append them under an "Additional Findings" section in the summary so they are not lost. Then run:
 
       ```bash
-      bash .claude/skills/review-pr/scripts/post-summary-comment.sh <PR_NUMBER> .claude-scratch/review-summary.md
+      bash <skill-path>/scripts/post-summary-comment.sh <PR_NUMBER> .claude-scratch/review-summary.md
       ```
 
    d. **Fallback.** If the inline comment script fails entirely (non-zero exit), include ALL findings in the summary comment body instead.
 
    e. **React to indicate completion.** If a trigger comment ID was parsed in step 0, react to signal the outcome:
-      - On success (summary posted): `bash .claude/skills/review-pr/scripts/react-to-comment.sh "<COMMENT_ID>" "+1"`
-      - On failure (could not post summary): `bash .claude/skills/review-pr/scripts/react-to-comment.sh "<COMMENT_ID>" "-1"`
+      - On success (summary posted): `bash <skill-path>/scripts/react-to-comment.sh "<COMMENT_ID>" "+1"`
+      - On failure (could not post summary): `bash <skill-path>/scripts/react-to-comment.sh "<COMMENT_ID>" "-1"`
 
 Examples of false positives — avoid flagging these in step 4:
 

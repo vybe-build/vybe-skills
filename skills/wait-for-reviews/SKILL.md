@@ -1,8 +1,8 @@
 ---
 name: wait-for-reviews
-version: 1.1.0
+version: 1.1.1
 description: Wait until a PR's CI checks and automated reviews (Claude, Greptile) have finished, up to a timeout. Use when the user says "wait for CI", "wait for reviews", "wait until checks pass", "block until the PR is reviewed", or wants to pause before the next round of work on a PR. Handles only the waiting — compose with fix/review skills for what comes next.
-allowed-tools: Bash(bash .claude/skills/wait-for-reviews/scripts/*), Bash(gh pr view *), Bash(gh repo view *)
+allowed-tools: Bash(bash *.claude/skills/wait-for-reviews/scripts/*), Bash(gh pr view *), Bash(gh repo view *)
 ---
 
 # Wait for Reviews
