@@ -40,11 +40,7 @@ Follow these steps precisely:
       bash <skill-path>/scripts/fetch-pr-diff.sh <PR_NUMBER> .claude-scratch/pr-diff.txt
       ```
 
-4. Launch **all 8** review agents in a **single parallel call**.
-
-   **Critical — run these agents in the foreground (`run_in_background: false`), not the background.** This skill runs headless (`claude -p` in CI), where the process exits as soon as the main turn ends. If you launch agents with `run_in_background: true` — which recent Claude Code versions may suggest by default — the turn ends before they finish and the review is never synthesized or posted. Ignore any background recommendation and block on all 8 results in this same invocation.
-
-   Each agent's prompt should include the PR summary (from step 3a), list of CLAUDE.md files (from step 2), existing review threads (from step 3b), and the instruction to read the diff from `.claude-scratch/pr-diff.txt` using the Read tool. Each agent MUST return:
+4. Launch **all 8** review agents in a **single parallel call**. Each agent's prompt should include the PR summary (from step 3a), list of CLAUDE.md files (from step 2), existing review threads (from step 3b), and the instruction to read the diff from `.claude-scratch/pr-diff.txt` using the Read tool. Each agent MUST return:
    - A score from 0 to 5 for their category (0 = catastrophic, 5 = perfect)
    - A list of findings, each marked as either 🚫 BLOCKING or ⚠️ NON-BLOCKING
    - For each finding: brief justification with specific file path and line number references
