@@ -1,8 +1,8 @@
 ---
 name: gt-create-submit
-version: 1.0.3
+version: 1.0.4
 description: Create a new stacked branch on top of the current branch and submit the stack to Graphite
-allowed-tools: Bash(git status), Bash(git diff *), Bash(git add *), Bash(gt create *), Bash(gt sync), Bash(gt log *), Bash(gt submit), Bash(gt info *), Bash(gh pr view *), Bash(gh pr edit *), Bash(gh pr diff *)
+allowed-tools: Bash(git status), Bash(git diff *), Bash(git add *), Bash(gt create *), Bash(gt sync), Bash(gt log *), Bash(gt submit --draft --no-edit), Bash(gt info *), Bash(gh pr view *), Bash(gh pr edit *), Bash(gh pr diff *)
 ---
 
 # Create and Submit

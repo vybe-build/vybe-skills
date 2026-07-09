@@ -2,7 +2,7 @@
 name: gt-create-publish
 version: 1.0.0
 description: Create a new stacked branch, submit it as a draft PR with a description, then publish it (mark ready for review)
-allowed-tools: Bash(git status), Bash(git diff *), Bash(git add *), Bash(gt create *), Bash(gt sync), Bash(gt log *), Bash(gt submit), Bash(gt info *), Bash(gh pr view *), Bash(gh pr edit *), Bash(gh pr diff *), Bash(gh pr ready *)
+allowed-tools: Bash(git status), Bash(git diff *), Bash(git add *), Bash(gt create *), Bash(gt sync), Bash(gt log *), Bash(gt submit --draft --no-edit), Bash(gt info *), Bash(gh pr view *), Bash(gh pr edit *), Bash(gh pr diff *), Bash(gh pr ready *)
 ---
 
 # Create and Publish
