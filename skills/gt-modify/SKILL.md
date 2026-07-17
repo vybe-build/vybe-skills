@@ -1,6 +1,6 @@
 ---
 name: gt-modify
-version: 1.0.3
+version: 1.0.4
 description: Commit changes to the current branch using Graphite
 allowed-tools: Bash(git status), Bash(git diff *), Bash(git add *), Bash(gt modify *), Bash(gt log *)
 ---
@@ -18,4 +18,4 @@ Create a new commit on the current branch. Automatically restacks descendants.
    c. Run `git diff --cached --stat` to confirm exactly what's staged, and verify nothing unrelated is included
 3. Generate a commit message following conventional commits format (e.g., `feat(VYB-<number>): description` if working on a Linear ticket)
 4. Run `gt modify --commit --message "<commit message>"` to create a new commit
-5. Run `gt log short` to show the updated stack
+5. Run `gt log short --stack` to show the updated stack

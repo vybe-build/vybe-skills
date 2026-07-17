@@ -13,5 +13,5 @@ Mark the current branch's PR as ready for review. This is the final step after s
 
 1. Run `gh pr view --json number,isDraft,url` to confirm the current branch has an open PR. If there is no PR, abort and tell the user to submit the branch first (e.g. via `/gt-submit`).
 2. If the PR is already published (`isDraft` is `false`), report that and stop — there is nothing to do.
-3. Run `gh pr ready` to mark the PR ready for review.
+3. Run `gh pr ready <number>` (the PR number from step 1) to mark the PR ready for review.
 4. Report the PR URL.
