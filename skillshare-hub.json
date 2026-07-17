@@ -49,6 +49,11 @@
       "source": "skills/gt-create"
     },
     {
+      "name": "gt-create-publish",
+      "description": "Create a new stacked branch, submit it as a draft PR with a description, then publish it (mark ready for review)",
+      "source": "skills/gt-create-publish"
+    },
+    {
       "name": "gt-create-submit",
       "description": "Create a new stacked branch on top of the current branch and submit the stack to Graphite",
       "source": "skills/gt-create-submit"
@@ -67,6 +72,11 @@
       "name": "gt-modify-submit",
       "description": "Commit changes to the current branch and submit the stack to Graphite",
       "source": "skills/gt-modify-submit"
+    },
+    {
+      "name": "gt-publish",
+      "description": "Mark the current branch's already-submitted PR as ready for review (publish it out of draft). Requires the branch to have been submitted first.",
+      "source": "skills/gt-publish"
     },
     {
       "name": "gt-submit",
