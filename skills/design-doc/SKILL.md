@@ -33,11 +33,6 @@ For designs with a wide option space, split the work into two documents:
 Write the brainstorm to be readable by an engineer without prior context on the feature:
 explain each section's problem and background before comparing options.
 
-If AI-generated research notes back the design, put them in a subfolder of the brainstorm
-directory, give each a "Not for review — AI-generated research notes, deleted once the
-design is finalized" banner under the H1, and do not link to them from the design or
-brainstorm docs.
-
 ## Document Structure
 
 Use the following template, adding or removing subsections as the topic demands. Keep the doc brief — brevity increases the chance reviewers actually read it.
@@ -115,7 +110,7 @@ entry to a clause or two; state the reasoning, don't re-argue it.]
 
 When applying review feedback, fold the content into the section while preserving that
 section's existing purpose. Do not let a reviewer's comment become the section's new
-thesis — that is the most common way a design doc degrades across revisions.
+thesis.
 
 Symptoms to check for after each round:
 - A section reorganized around whatever the last comment emphasized (e.g. a comment
@@ -124,10 +119,8 @@ Symptoms to check for after each round:
 - Sentences arguing against a previous draft the reviewer never saw — after removing
   something, prose that defends its absence ("not a component built for X", "the
   response is not redacted").
-- Answers to review questions left inline where an explanation should be.
-
-After several rounds, re-read sections that have NOT been commented on recently. These
-patterns cluster, so if they appear in two places they are likely in others.
+- Answers to review questions left inline where an explanation should be. Most review
+  comments do not warrant an explanation in the design.
 
 ## After Writing
 
