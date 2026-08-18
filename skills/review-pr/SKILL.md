@@ -1,6 +1,6 @@
 ---
 name: review-pr
-version: 1.1.1
+version: 1.2.0
 description: Deep multi-dimensional code review for a pull request
 allowed-tools: Bash(gh issue view:*), Bash(gh search:*), Bash(gh issue list:*), Bash(gh pr comment:*), Bash(gh pr diff:*), Bash(gh pr view:*), Bash(gh pr list:*), Bash(gh api:*), Bash(bash *.claude/skills/review-pr/scripts/*), Bash(echo *), Bash(date *), Bash(jq *), Bash(git fetch *), Bash(git show *), Bash(git diff *), Bash(git log *), Bash(git branch --list *), Write(.claude-scratch/*), Write(/.claude-scratch/*), Write(//**/.claude-scratch/*)
 ---
@@ -40,7 +40,7 @@ Follow these steps precisely:
       bash <skill-path>/scripts/fetch-pr-diff.sh <PR_NUMBER> .claude-scratch/pr-diff.txt
       ```
 
-4. Launch **all 8** review agents in a **single parallel call**. Each agent's prompt should include the PR summary (from step 3a), list of CLAUDE.md files (from step 2), existing review threads (from step 3b), and the instruction to read the diff from `.claude-scratch/pr-diff.txt` using the Read tool. Each agent MUST return:
+4. Launch **all 8** review agents in a **single parallel call**. Every one of these agents MUST be an **Opus** agent — set the model explicitly on each, do not let them inherit the session model. Each agent's prompt should include the PR summary (from step 3a), list of CLAUDE.md files (from step 2), existing review threads (from step 3b), and the instruction to read the diff from `.claude-scratch/pr-diff.txt` using the Read tool. Each agent MUST return:
    - A score from 0 to 5 for their category (0 = catastrophic, 5 = perfect)
    - A list of findings, each marked as either 🚫 BLOCKING or ⚠️ NON-BLOCKING
    - For each finding: brief justification with specific file path and line number references
@@ -48,7 +48,7 @@ Follow these steps precisely:
    - For each finding: whether it is a **line-level** finding (tied to a specific line in the diff) or a **file-level** finding (about the file as a whole, or about a line outside the diff region)
    - Any additional issues noticed outside their checklist
 
-   The 8 agents are:
+   The 8 Opus agents are:
 
    a. **🔒 Security (a.k.a. Sentinel)**: Audit for XSS, injection (SQL/command/path traversal), auth bypass, missing permission checks (`withAuth`/`withApp`/`checkPermission`), secrets or credentials in code, CORS/CSRF issues, insecure dependencies, information leakage in error messages or logs, and any OWASP Top 10 violations. **Bugs:** logic flaws that could be exploited (e.g. inverted permission checks, missing authorization on branching paths, TOCTOU races). Flag anything else security-relevant you notice.
 
