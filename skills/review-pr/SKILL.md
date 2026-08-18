@@ -1,6 +1,6 @@
 ---
 name: review-pr
-version: 1.2.0
+version: 1.3.0
 description: Deep multi-dimensional code review for a pull request
 allowed-tools: Bash(gh issue view:*), Bash(gh search:*), Bash(gh issue list:*), Bash(gh pr comment:*), Bash(gh pr diff:*), Bash(gh pr view:*), Bash(gh pr list:*), Bash(gh api:*), Bash(bash *.claude/skills/review-pr/scripts/*), Bash(echo *), Bash(date *), Bash(jq *), Bash(git fetch *), Bash(git show *), Bash(git diff *), Bash(git log *), Bash(git branch --list *), Write(.claude-scratch/*), Write(/.claude-scratch/*), Write(//**/.claude-scratch/*)
 ---
@@ -20,7 +20,7 @@ Follow these steps precisely:
 1. Use a Haiku agent to check if the pull request (a) is closed or (b) does not need a code review (eg. because it is an automated pull request, or is very simple and obviously ok). If so, do not proceed.
 - Note: re-reviews are allowed. Draft PRs are allowed.
 
-2. Use another Haiku agent to give you a list of file paths to (but not the contents of) any relevant CLAUDE.md files from the codebase: the root CLAUDE.md file (if one exists), as well as any CLAUDE.md files in the directories whose files the pull request modified.
+2. Use another Haiku agent to give you a list of file paths to (but not the contents of) any relevant agent instruction files from the codebase: the root `CLAUDE.md` and `AGENTS.md` files (whichever exist), as well as any `CLAUDE.md` or `AGENTS.md` files in the directories whose files the pull request modified.
 
 3. **Gather PR context.** Run these three in parallel:
 
@@ -40,7 +40,7 @@ Follow these steps precisely:
       bash <skill-path>/scripts/fetch-pr-diff.sh <PR_NUMBER> .claude-scratch/pr-diff.txt
       ```
 
-4. Launch **all 8** review agents in a **single parallel call**. Every one of these agents MUST be an **Opus** agent — set the model explicitly on each, do not let them inherit the session model. Each agent's prompt should include the PR summary (from step 3a), list of CLAUDE.md files (from step 2), existing review threads (from step 3b), and the instruction to read the diff from `.claude-scratch/pr-diff.txt` using the Read tool. Each agent MUST return:
+4. Launch **all 9** review agents in a **single parallel call**. Every one of these agents MUST be an **Opus** agent — set the model explicitly on each, do not let them inherit the session model. Each agent's prompt should include the PR summary (from step 3a), list of CLAUDE.md/AGENTS.md files (from step 2), existing review threads (from step 3b), and the instruction to read the diff from `.claude-scratch/pr-diff.txt` using the Read tool. Each agent MUST return:
    - A score from 0 to 5 for their category (0 = catastrophic, 5 = perfect)
    - A list of findings, each marked as either 🚫 BLOCKING or ⚠️ NON-BLOCKING
    - For each finding: brief justification with specific file path and line number references
@@ -48,7 +48,7 @@ Follow these steps precisely:
    - For each finding: whether it is a **line-level** finding (tied to a specific line in the diff) or a **file-level** finding (about the file as a whole, or about a line outside the diff region)
    - Any additional issues noticed outside their checklist
 
-   The 8 Opus agents are:
+   The 9 Opus agents are:
 
    a. **🔒 Security (a.k.a. Sentinel)**: Audit for XSS, injection (SQL/command/path traversal), auth bypass, missing permission checks (`withAuth`/`withApp`/`checkPermission`), secrets or credentials in code, CORS/CSRF issues, insecure dependencies, information leakage in error messages or logs, and any OWASP Top 10 violations. **Bugs:** logic flaws that could be exploited (e.g. inverted permission checks, missing authorization on branching paths, TOCTOU races). Flag anything else security-relevant you notice.
 
@@ -62,13 +62,15 @@ Follow these steps precisely:
 
    f. **🎨 Design System & UI/UX (a.k.a. Pixel)**: Check that project color tokens are used (no raw Tailwind colors like `gray`, `slate`, `red`), project typography classes are used (no default `text-sm`, `text-lg`, etc.), no `dark:` variants (semantic tokens handle dark mode), no opacity modifiers on colors (`bg-primary/50`), responsive design considered, accessibility (aria attributes, keyboard navigation), consistency with existing UI patterns, and no hardcoded inline styles. Flag anything else UI/UX-relevant you notice. Only apply this agent's checks to files that contain JSX/TSX markup — skip pure logic files.
 
-   g. **📋 CLAUDE.md Compliance (a.k.a. Sheriff)**: Verify all rules from the root and directory-level CLAUDE.md files are followed: file/directory naming (kebab-case), component naming (PascalCase), hook naming (camelCase with `use` prefix), constants (UPPER_SNAKE_CASE), auth wrappers on API routes, `logger` instead of `console.log`, tracing consideration, error handling with Zod + proper HTTP status codes, comment style (minimal, only when non-obvious), shared types (no duplication between client/server), testing requirements met, color/typography system used, and Graphite conventions followed. Flag anything else CLAUDE.md-relevant you notice.
+   g. **📋 CLAUDE.md Compliance (a.k.a. Sheriff)**: Verify all rules from the root and directory-level CLAUDE.md/AGENTS.md files are followed: file/directory naming (kebab-case), component naming (PascalCase), hook naming (camelCase with `use` prefix), constants (UPPER_SNAKE_CASE), auth wrappers on API routes, `logger` instead of `console.log`, tracing consideration, error handling with Zod + proper HTTP status codes, shared types (no duplication between client/server), testing requirements met, color/typography system used, and Graphite conventions followed. Code comment policy is owned by the Scribe agent (i) — do not duplicate its findings. Flag anything else CLAUDE.md-relevant you notice.
 
    h. **💀 Dead Code (a.k.a. Reaper)**: Hunt for code introduced or left behind by this PR that is never reached or used. Focus on the cross-module and semantic cases a linter/typechecker won't catch: exports that nothing imports, functions/components/hooks/constants defined but never referenced anywhere in the codebase, unreachable code after `return`/`throw`/`break`, branches that can never execute (dead conditionals, feature flags that are now always-on or always-off), commented-out code blocks, orphaned files no longer imported by anything, leftover scaffolding or debug code, and symbols referenced only by their own (now-removed) call sites. Also flag dead dependencies added to `package.json` but never used, and exports kept "just in case" with no consumer. **Bugs:** a "dead" branch that is actually reachable (indicating an upstream logic error), or removed code whose remaining references will break. When uncertain whether a symbol is truly unused, search the codebase before flagging — public API surface and entrypoints may be intentionally unreferenced internally. Flag anything else dead-code-relevant you notice.
 
+   i. **💬 Code Comments (a.k.a. Scribe)**: Review every **code comment** this PR adds or modifies — comments written in the source files themselves (JSDoc/docstrings, inline `//` and `/* */` comments, TODO/FIXME markers). This agent is about comments *in the code*, not PR review comments on GitHub. First, read the code comment policy in the root and directory-level CLAUDE.md/AGENTS.md files (from step 2) and enforce it literally; if a repo rule conflicts with the defaults below, the repo rule wins. Then, judge whether each code comment earns its place: does it explain *why* rather than restate *what* the code already says? Flag code comments that narrate the obvious (`// increment counter`), duplicate a self-documenting name, restate a type signature, or would be better solved by renaming a variable or extracting a function. Flag code comments that are **wrong or stale** — describing behavior the code no longer has, referencing renamed symbols or deleted parameters, or left over from an earlier revision of this PR. Flag commit-narration comments that describe the change rather than the code (`// changed this to fix the bug`, `// new logic`, `// per review feedback`), AI-authored filler, banner/divider comments, commented-out code, and TODO/FIXME without an owner or tracking issue. Conversely, flag **missing** code comments where the code genuinely needs one: non-obvious workarounds, deliberate deviations from a spec, tricky invariants, magic constants with external meaning, or a subtle reason a naive refactor would break things. **Bugs:** a code comment that contradicts the code often marks a real defect — when they disagree, investigate which one is wrong and say so. Do not flag code comments on lines this PR did not touch, and do not nitpick wording, grammar, or punctuation. Flag anything else code-comment-relevant you notice.
+
 5. Use a Haiku agent to repeat the eligibility check from step 1 (closed or automated/trivial), to make sure the pull request is still eligible for code review.
 
-6. Synthesize all agent results into the output format below. Calculate the overall score as the simple average of all 8 category scores. Apply verdict logic: 🚫 DO NOT MERGE if ANY 🚫 BLOCKING issue exists across any category. ✅ READY TO MERGE otherwise.
+6. Synthesize all agent results into the output format below. Calculate the overall score as the simple average of all 9 category scores. Apply verdict logic: 🚫 DO NOT MERGE if ANY 🚫 BLOCKING issue exists across any category. ✅ READY TO MERGE otherwise.
 
 7. Post the review using the helper scripts:
 
@@ -132,7 +134,7 @@ Examples of false positives — avoid flagging these in step 4:
 - Something that looks like a bug but is not actually a bug
 - Pedantic nitpicks that a senior engineer wouldn't call out
 - Issues that a linter, typechecker, or compiler would catch (eg. missing or incorrect imports, type errors, broken tests, formatting issues, pedantic style issues like newlines). No need to run these build steps yourself — it is safe to assume that they will be run separately as part of CI.
-- General code quality issues (eg. lack of test coverage, general security issues, poor documentation), unless explicitly required in CLAUDE.md
+- General code quality issues (eg. lack of test coverage, general security issues, poor documentation), unless explicitly required in CLAUDE.md. Exception: the Scribe agent (4i) owns code comments on lines this PR touched, and may flag a missing code comment where the code is genuinely non-obvious
 - Issues that are called out in CLAUDE.md, but explicitly silenced in the code (eg. due to a lint ignore comment)
 - Changes in functionality that are likely intentional or are directly related to the broader change
 - Real issues, but on lines that the user did not modify in their pull request
@@ -171,6 +173,7 @@ For the top-level PR comment, use this format precisely:
 | 🎨 Design System | X/5 | ✅ / ... |
 | 📋 CLAUDE.md | X/5 | ✅ / ... |
 | 💀 Dead Code | X/5 | ✅ / ... |
+| 💬 Code Comments | X/5 | ✅ / ... |
 
 ---
 
@@ -226,8 +229,9 @@ Or, if no issues found at all:
 | 🎨 Design System | 5/5 | ✅ |
 | 📋 CLAUDE.md | 5/5 | ✅ |
 | 💀 Dead Code | 5/5 | ✅ |
+| 💬 Code Comments | 5/5 | ✅ |
 
-No issues found. Deep review across security, performance, error handling, code hygiene, tests, design system, CLAUDE.md compliance, and dead code.
+No issues found. Deep review across security, performance, error handling, code hygiene, tests, design system, CLAUDE.md compliance, dead code, and code comments.
 
 🤖 Generated with [Claude Code](https://claude.ai/code) · <sub>Last updated: <!-- timestamp -->YYYY-MM-DD HH:MM UTC<!-- /timestamp --></sub>
 
