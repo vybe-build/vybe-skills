@@ -1,6 +1,6 @@
 ---
 name: review-comments
-version: 1.1.1
+version: 1.1.2
 description: Fetch and analyze unresolved PR review comments for the current branch. Use when the user says "review comments", "PR comments", "PR feedback", "check comments", "address feedback", or wants to see and triage unresolved review comments on their pull request.
 allowed-tools: Bash(bash *.claude/skills/review-comments/scripts/*), Bash(gh pr view *), Read
 ---
@@ -43,7 +43,8 @@ For every (grouped) thread, provide:
 2. **Author(s)** — the distinct GitHub logins across all comments in the thread (or all underlying threads, if grouped). List every unique author.
 3. **Comment summary** — one-line distillation of the reviewer's concern (pick the clearest wording when grouping)
 4. **Validity assessment** — is this a valid concern? Why or why not? Consider:
-   - Does the concern reflect an actual bug, readability issue, or violation of project conventions?
+   - Estimate the real impact of the issue from 0 to 5. Does the concern reflect an actual bug, readability issue, or violation of project conventions?
+   - Estimate the complexity cost of fixing the issue from -5 to 5. Consider code complexity, readablity, maintainability, and any other applicable factors. Is this cost worth the benefit of the fix?
    - Is it subjective style preference vs objective improvement?
    - Has the code already been changed to address this concern?
    - Is the comment outdated (code rewritten or removed)?
@@ -54,6 +55,8 @@ For every (grouped) thread, provide:
    - **Outdated** — the relevant code has been significantly rewritten or removed, making the comment no longer applicable
    - **Defer** — valid concern but out of scope (explain why — e.g. unrelated refactor, risky change, separate feature)
    - **Dismiss** — not a valid concern (explain why — e.g. subjective, incorrect)
+
+Flag high complexity / high impact issues to the operator for visibility.
 
 ### 6. Present a summary table
 
