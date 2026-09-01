@@ -1,6 +1,6 @@
 ---
 name: review-comments
-version: 1.1.1
+version: 1.1.2
 description: Fetch and analyze unresolved PR review comments for the current branch. Use when the user says "review comments", "PR comments", "PR feedback", "check comments", "address feedback", or wants to see and triage unresolved review comments on their pull request.
 allowed-tools: Bash(bash *.claude/skills/review-comments/scripts/*), Bash(gh pr view *), Read
 ---
@@ -42,24 +42,29 @@ For every (grouped) thread, provide:
 1. **Location** — file path and line number
 2. **Author(s)** — the distinct GitHub logins across all comments in the thread (or all underlying threads, if grouped). List every unique author.
 3. **Comment summary** — one-line distillation of the reviewer's concern (pick the clearest wording when grouping)
-4. **Validity assessment** — is this a valid concern? Why or why not? Consider:
+4. **Impact score** — estimate the real impact of the issue from 0 to 5 and briefly justify the score.
+5. **Fix complexity score** — estimate the complexity cost of fixing the issue from -5 to 5 and briefly justify the score. Consider code complexity, readablity, maintainability, and any other applicable factors.
+6. **Validity assessment** — is this a valid concern? Why or why not? Consider:
+   - Is the complexity cost worth the benefit of the fix?
    - Does the concern reflect an actual bug, readability issue, or violation of project conventions?
    - Is it subjective style preference vs objective improvement?
    - Has the code already been changed to address this concern?
    - Is the comment outdated (code rewritten or removed)?
    - Is it from a bot (e.g. accounts that look bot-like such as `greptile-apps`, `copilot-pull-request-reviewer`, `claude`, or any login ending in `[bot]`) vs a human reviewer? Bot comments deserve less weight.
-5. **Recommendation** — one of:
+7. **Recommendation** — one of:
    - **Fix now** — valid concern, in scope for this PR, worth addressing before merge
    - **Addressed previously** — the code has already been changed to satisfy the reviewer's concern
    - **Outdated** — the relevant code has been significantly rewritten or removed, making the comment no longer applicable
    - **Defer** — valid concern but out of scope (explain why — e.g. unrelated refactor, risky change, separate feature)
    - **Dismiss** — not a valid concern (explain why — e.g. subjective, incorrect)
 
+Flag high complexity / high impact issues to the operator for visibility.
+
 ### 6. Present a summary table
 
 End with a markdown table:
 
-| # | File | Line | Author | Concern | Verdict | Reason |
-|---|------|------|--------|---------|---------|--------|
+| # | File | Line | Author | Concern | Impact | Fix complexity | Verdict | Reason |
+|---|------|------|--------|---------|--------|----------------|---------|--------|
 
 Group by verdict (Fix now, Addressed previously, Outdated, Defer, Dismiss). The `#` column is only a row index for readability within this table — it has no meaning outside the list and should not be used to reference comments elsewhere.
