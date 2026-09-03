@@ -1,6 +1,6 @@
 ---
 name: update-threads
-version: 1.0.3
+version: 1.1.0
 description: Reply to and resolve PR review comment threads with verdicts. Use when the user says "update threads", "resolve threads", "reply to comments", or wants to post decisions (Fixed, Addressed previously, Outdated, Deferred, Dismissed) on PR review threads and resolve them.
 allowed-tools: Bash(bash *.claude/skills/update-threads/scripts/*), Bash(bash *.claude/skills/review-comments/scripts/*)
 ---
@@ -48,16 +48,28 @@ The **Author** column should list the distinct GitHub logins across all comments
 
 Proceed directly to posting — do not ask for user confirmation. The user has already approved by invoking this skill after running `review-comments`.
 
-### 4. Reply to and resolve each thread
+### 4. Publish all replies
 
-For each thread, post the reply and resolve it. Issue each command as a **separate** Bash tool call (do not chain with `&&` or `;` — chained commands trigger fresh permission prompts each time), but run them in **parallel** within a single message for performance:
+Pass every thread/reply pair to the batch script in a **single** Bash tool call:
 
 ```bash
-bash <skill-path>/scripts/reply-to-thread.sh <thread_id> "<emoji> **<verdict>** — <reason>"
-bash <skill-path>/scripts/resolve-thread.sh <thread_id>
+bash <skill-path>/scripts/reply-to-threads.sh \
+  <thread_id_1> "<emoji> **<verdict>** — <reason>" \
+  <thread_id_2> "<emoji> **<verdict>** — <reason>"
 ```
 
-Batch all of these calls (across all threads) into a single tool-use message so they execute concurrently.
+The script validates all targets before making changes, creates one dedicated pending review, explicitly attaches every reply to that review, submits that exact review as `COMMENT`, and verifies publication. If the authenticated user already has a pending review on the PR, the script stops before posting anything; submit or discard that review and retry. This prevents GitHub from silently distributing replies across implicit pending reviews and avoids accidentally submitting unrelated draft comments.
+
+If reply publication fails, report the failure and stop. Do not resolve any threads.
+
+### 5. Resolve the threads
+
+Only after the reply batch succeeds, resolve each thread. Issue each command as a **separate** Bash tool call, but run them in **parallel** within a single message:
+
+```bash
+bash <skill-path>/scripts/resolve-thread.sh <thread_id_1>
+bash <skill-path>/scripts/resolve-thread.sh <thread_id_2>
+```
 
 Use these emoji prefixes:
 
@@ -69,4 +81,4 @@ Use these emoji prefixes:
 | Deferred | ⏳ |
 | Dismissed | 🙅 |
 
-Report the results — how many threads were updated and any failures.
+Report the two phases separately — how many replies were published, how many threads were resolved, and any failures. A resolution failure must not be reported as a missing reply.
