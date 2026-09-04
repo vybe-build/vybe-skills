@@ -1,6 +1,6 @@
 ---
 name: review-comments
-version: 1.1.2
+version: 1.1.3
 description: Fetch and analyze unresolved PR review comments for the current branch. Use when the user says "review comments", "PR comments", "PR feedback", "check comments", "address feedback", or wants to see and triage unresolved review comments on their pull request.
 allowed-tools: Bash(bash *.claude/skills/review-comments/scripts/*), Bash(gh pr view *), Read
 ---
@@ -57,6 +57,8 @@ For every (grouped) thread, provide:
    - **Outdated** — the relevant code has been significantly rewritten or removed, making the comment no longer applicable
    - **Defer** — valid concern but out of scope (explain why — e.g. unrelated refactor, risky change, separate feature)
    - **Dismiss** — not a valid concern (explain why — e.g. subjective, incorrect)
+
+Be critical. Avoid fixes that are too complex or address very rare or hypothetical problems.
 
 Flag high complexity / high impact issues to the operator for visibility.
 
