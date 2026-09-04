@@ -1,6 +1,6 @@
 ---
 name: review-comments-and-fix
-version: 1.0.2
+version: 1.0.3
 description: Fetch unresolved PR review comments and immediately apply fixes for any "Fix now" items. Use when the user says "fix comments", "fix-comments", "review-comments-and-fix", "fix review feedback", "address comments", or wants to skip the triage-and-confirm step and jump straight to applying fixes.
 ---
 
@@ -18,4 +18,4 @@ Fetch unresolved PR review comments and immediately apply fixes for valid concer
 
 - The user opted into auto-fix by invoking this skill, so apply fixes without intermediate approval prompts.
 - If a Fix Now item is ambiguous, apply the safest interpretation and call it out in the final report.
-- Do not commit or push. Suggest `/commit-and-push` and `/update-threads` as natural next steps.
+- Do not commit or push. Suggest `/commit-and-push` and `/update-and-resolve-threads` as natural next steps.

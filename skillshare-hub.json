@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-06-29T02:48:21Z",
+  "generatedAt": "2026-09-04T22:23:53Z",
   "sourcePath": "github.com/vybe-build/vybe-skills",
   "skills": [
     {
@@ -15,7 +15,7 @@
     },
     {
       "name": "commit-and-push",
-      "description": "Commit and push the current branch's changes using whichever VCS workflow the user prefers — Graphite or plain git. A VCS-agnostic router so review loops and other skills can commit without hard-coding a tool. Use when the user says \"commit and push\", or as the commit step inside an automated review round.",
+      "description": "Commit and push the current branch's changes using the right VCS workflow — Graphite when a stacked PR is wanted, otherwise plain git. A VCS-agnostic router so other skills can commit without hard-coding a tool. Use when the user says \"commit and push\" or as a commit step in a larger workflow.",
       "source": "skills/commit-and-push"
     },
     {
@@ -80,7 +80,7 @@
     },
     {
       "name": "gt-submit",
-      "description": "Submit current branch and its ancestors to Graphite, creating or updating PRs",
+      "description": "Submit current branch and its ancestors to Graphite, creating or updating PRs while preserving their draft or ready state",
       "source": "skills/gt-submit"
     },
     {
@@ -94,9 +94,19 @@
       "source": "skills/pr-update-description"
     },
     {
+      "name": "propose-verdicts",
+      "description": "Post proposed verdicts and reasoning as replies on unresolved PR review threads without resolving them, so the operator can review each decision alongside the code. Use when the user says \"propose verdicts\", \"post proposed verdicts\", or wants PR-comment triage published for review before threads are finalized.",
+      "source": "skills/propose-verdicts"
+    },
+    {
       "name": "request-reviews",
       "description": "Post comments to the current PR to trigger re-reviews from Claude and Greptile. Use when the user says \"request reviews\", \"re-review\", \"trigger reviews\", or wants reviewers to look at the PR again.",
       "source": "skills/request-reviews"
+    },
+    {
+      "name": "resolve-threads",
+      "description": "Resolve unresolved PR review threads without posting replies, flagging missing final verdicts when conversation context indicates updates may not have happened. Resolves all open threads by default or only a requested subset. Use when the user says \"resolve threads\", \"close review threads\", or wants selected review conversations marked resolved.",
+      "source": "skills/resolve-threads"
     },
     {
       "name": "review-comments",
@@ -114,8 +124,18 @@
       "source": "skills/review-pr"
     },
     {
+      "name": "update-and-resolve-threads",
+      "description": "Post final verdict replies and resolve PR review threads in one workflow. Handles all unresolved threads by default or a requested subset. Use when the user says \"update and resolve threads\", \"reply and resolve comments\", or wants review decisions published and finalized together.",
+      "source": "skills/update-and-resolve-threads"
+    },
+    {
+      "name": "update-non-fix-threads",
+      "description": "Reply to and resolve every unresolved PR review thread except those with a Fix now verdict. Use when the user says \"update non-fix threads\", \"resolve non-fix comments\", or wants accepted, outdated, deferred, and dismissed review decisions finalized while actionable fixes remain open.",
+      "source": "skills/update-non-fix-threads"
+    },
+    {
       "name": "update-threads",
-      "description": "Reply to and resolve PR review comment threads with verdicts. Use when the user says \"update threads\", \"resolve threads\", \"reply to comments\", or wants to post decisions (Fixed, Addressed previously, Outdated, Deferred, Dismissed) on PR review threads and resolve them.",
+      "description": "Reply to unresolved PR review threads with proposed or final verdicts, without resolving them. Updates all threads by default or only a requested subset. Use when the user says \"update threads\", \"reply to comments\", \"post verdicts\", or wants review decisions recorded on selected threads.",
       "source": "skills/update-threads"
     },
     {
