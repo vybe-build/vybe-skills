@@ -10,4 +10,4 @@ This is a compatibility alias for `update-and-resolve-threads`.
 
 Invoke `update-and-resolve-threads` with the user's requested selection. Default to all unresolved threads when no subset is requested. Pass every subset constraint through unchanged; never silently broaden it.
 
-This alias always uses final verdicts and resolves only the threads whose replies were successfully published. Use `post-replies` directly when replies should remain unresolved, including proposal workflows.
+This alias always uses final verdicts and resolves only the threads whose replies were successfully published. Use `reply-to-threads` directly when replies should remain unresolved, including proposal workflows.

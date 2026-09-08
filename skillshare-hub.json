@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-08T04:42:18Z",
+  "generatedAt": "2026-09-08T04:55:02Z",
   "sourcePath": "github.com/vybe-build/vybe-skills",
   "skills": [
     {
@@ -89,9 +89,9 @@
       "source": "skills/gt-sync"
     },
     {
-      "name": "post-replies",
-      "description": "Post proposed or final verdict replies on unresolved PR review threads without resolving them. Handles all unresolved threads by default or only a requested subset. Use when the user says \"post replies\", \"reply without resolving\", or wants review decisions published while threads remain open.",
-      "source": "skills/post-replies"
+      "name": "post-proposed-verdicts",
+      "description": "Post proposed verdicts and reasoning as replies on unresolved PR review threads without resolving them, so the operator can review each decision alongside the code. Use when the user says \"post proposed verdicts\" or wants PR-comment triage published for review before threads are finalized.",
+      "source": "skills/post-proposed-verdicts"
     },
     {
       "name": "pr-update-description",
@@ -99,9 +99,9 @@
       "source": "skills/pr-update-description"
     },
     {
-      "name": "propose-verdicts",
-      "description": "Post proposed verdicts and reasoning as replies on unresolved PR review threads without resolving them, so the operator can review each decision alongside the code. Use when the user says \"propose verdicts\", \"post proposed verdicts\", or wants PR-comment triage published for review before threads are finalized.",
-      "source": "skills/propose-verdicts"
+      "name": "reply-to-threads",
+      "description": "Post proposed or final verdict replies on unresolved PR review threads without resolving them. Handles all unresolved threads by default or only a requested subset. Use when the user says \"reply to threads\", \"reply without resolving\", or wants review decisions published while threads remain open.",
+      "source": "skills/reply-to-threads"
     },
     {
       "name": "request-reviews",

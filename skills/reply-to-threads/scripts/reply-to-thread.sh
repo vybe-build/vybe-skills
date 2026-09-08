@@ -72,7 +72,7 @@ if [ "$(printf '%s\n' "$CONTEXT" | jq -r '.data.review.state')" != "PENDING" ]; 
   exit 1
 fi
 if [ "$(printf '%s\n' "$CONTEXT" | jq -r '.data.review.body')" != "$MANAGED_REVIEW_MARKER" ]; then
-  echo "Error: Review $REVIEW_ID was not created by post-replies." >&2
+  echo "Error: Review $REVIEW_ID was not created by reply-to-threads." >&2
   exit 1
 fi
 if [ "$(printf '%s\n' "$CONTEXT" | jq -r '.data.review.pullRequest.id')" != \

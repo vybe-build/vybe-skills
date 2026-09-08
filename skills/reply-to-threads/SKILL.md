@@ -1,11 +1,11 @@
 ---
-name: post-replies
+name: reply-to-threads
 version: 1.0.0
-description: Post proposed or final verdict replies on unresolved PR review threads without resolving them. Handles all unresolved threads by default or only a requested subset. Use when the user says "post replies", "reply without resolving", or wants review decisions published while threads remain open.
-allowed-tools: Bash(bash *.claude/skills/post-replies/scripts/create-review.sh *), Bash(bash *.claude/skills/post-replies/scripts/reply-to-thread.sh *), Bash(bash *.claude/skills/post-replies/scripts/submit-review.sh *), Bash(bash *.claude/skills/review-comments/scripts/*), Read
+description: Post proposed or final verdict replies on unresolved PR review threads without resolving them. Handles all unresolved threads by default or only a requested subset. Use when the user says "reply to threads", "reply without resolving", or wants review decisions published while threads remain open.
+allowed-tools: Bash(bash *.claude/skills/reply-to-threads/scripts/create-review.sh *), Bash(bash *.claude/skills/reply-to-threads/scripts/reply-to-thread.sh *), Bash(bash *.claude/skills/reply-to-threads/scripts/submit-review.sh *), Bash(bash *.claude/skills/review-comments/scripts/*), Read
 ---
 
-# Post Replies
+# Reply to Threads
 
 Post verdicts and concise reasoning to unresolved PR review threads through one managed GitHub review. This skill only publishes replies; it never resolves threads or changes code.
 
