@@ -59,7 +59,7 @@ if ! printf '%s\n' "$REVIEW_RESULT" | jq -e '.data.node.id != null' > /dev/null;
 fi
 if [ "$(printf '%s\n' "$REVIEW_RESULT" | jq -r '.data.node.body')" != \
      "$MANAGED_REVIEW_MARKER" ]; then
-  echo "Error: Review $REVIEW_ID was not created by update-threads." >&2
+  echo "Error: Review $REVIEW_ID was not created by reply-to-threads." >&2
   exit 1
 fi
 if [ "$(printf '%s\n' "$REVIEW_RESULT" | jq -r \
@@ -91,7 +91,7 @@ MANAGED_COMMENT_COUNT=$(printf '%s\n' "$REVIEW_RESULT" | jq \
   --arg prefix "<!-- update-threads:$REVIEW_ID:" \
   '[.data.node.comments.nodes[] | select(.body | contains($prefix))] | length')
 if [ "$MANAGED_COMMENT_COUNT" -ne "$COMMENT_COUNT" ]; then
-  echo "Error: Review $REVIEW_ID contains comments not created by update-threads." >&2
+  echo "Error: Review $REVIEW_ID contains comments not created by reply-to-threads." >&2
   exit 1
 fi
 

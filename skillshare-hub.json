@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-04T22:23:53Z",
+  "generatedAt": "2026-09-08T04:55:02Z",
   "sourcePath": "github.com/vybe-build/vybe-skills",
   "skills": [
     {
@@ -89,14 +89,19 @@
       "source": "skills/gt-sync"
     },
     {
+      "name": "post-proposed-verdicts",
+      "description": "Post proposed verdicts and reasoning as replies on unresolved PR review threads without resolving them, so the operator can review each decision alongside the code. Use when the user says \"post proposed verdicts\" or wants PR-comment triage published for review before threads are finalized.",
+      "source": "skills/post-proposed-verdicts"
+    },
+    {
       "name": "pr-update-description",
       "description": "Update the PR description for the current branch based on its changes. Use when the user asks to \"update the PR description\", \"rewrite the PR body\", \"refresh the PR description\", or wants the description regenerated based on current branch changes.",
       "source": "skills/pr-update-description"
     },
     {
-      "name": "propose-verdicts",
-      "description": "Post proposed verdicts and reasoning as replies on unresolved PR review threads without resolving them, so the operator can review each decision alongside the code. Use when the user says \"propose verdicts\", \"post proposed verdicts\", or wants PR-comment triage published for review before threads are finalized.",
-      "source": "skills/propose-verdicts"
+      "name": "reply-to-threads",
+      "description": "Post proposed or final verdict replies on unresolved PR review threads without resolving them. Handles all unresolved threads by default or only a requested subset. Use when the user says \"reply to threads\", \"reply without resolving\", or wants review decisions published while threads remain open.",
+      "source": "skills/reply-to-threads"
     },
     {
       "name": "request-reviews",
@@ -135,7 +140,7 @@
     },
     {
       "name": "update-threads",
-      "description": "Reply to unresolved PR review threads with proposed or final verdicts, without resolving them. Updates all threads by default or only a requested subset. Use when the user says \"update threads\", \"reply to comments\", \"post verdicts\", or wants review decisions recorded on selected threads.",
+      "description": "Alias for update-and-resolve-threads. Post final verdict replies and then resolve the same PR review threads, handling all unresolved threads by default or only a requested subset. Use when the user says \"update threads\", \"reply and resolve comments\", or wants review decisions published and finalized.",
       "source": "skills/update-threads"
     },
     {

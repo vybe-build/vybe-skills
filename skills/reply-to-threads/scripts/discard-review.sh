@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Explicitly discard an update-threads managed pending review.
+# Explicitly discard a reply-to-threads managed pending review.
 # Usage: discard-review.sh <review_id>
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -27,7 +27,7 @@ if ! RESULT=$(graphql -f query="$QUERY" -f reviewId="$REVIEW_ID"); then
 fi
 if [ "$(printf '%s\n' "$RESULT" | jq -r '.data.node.body')" != \
      "$MANAGED_REVIEW_MARKER" ]; then
-  echo "Error: Review $REVIEW_ID was not created by update-threads." >&2
+  echo "Error: Review $REVIEW_ID was not created by reply-to-threads." >&2
   exit 1
 fi
 if [ "$(printf '%s\n' "$RESULT" | jq -r '.data.node.state')" != "PENDING" ]; then

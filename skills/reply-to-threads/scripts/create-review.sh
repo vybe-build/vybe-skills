@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Create a managed pending review for the PR containing a review thread. If a
-# prior update-threads run left its managed review pending, return it so the
+# prior reply-to-threads run left its managed review pending, return it so the
 # caller can resume posting missing replies.
 # Usage: create-review.sh <thread_id>
 
@@ -62,7 +62,7 @@ if [ -n "$PENDING_REVIEW" ]; then
   COMMENT_COUNT=$(printf '%s\n' "$PENDING_REVIEW" | jq -r '.comments.totalCount')
   if [ "$REVIEW_BODY" != "$MANAGED_REVIEW_MARKER" ]; then
     echo "Error: $VIEWER_LOGIN already has an unrelated pending review on PR #$PR_NUMBER." >&2
-    echo "Submit or discard that review before running update-threads." >&2
+    echo "Submit or discard that review before running reply-to-threads." >&2
     exit 1
   fi
 
