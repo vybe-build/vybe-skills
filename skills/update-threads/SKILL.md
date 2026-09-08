@@ -6,8 +6,6 @@ description: Alias for update-and-resolve-threads. Post final verdict replies an
 
 # Update Threads
 
-This is a compatibility alias for `update-and-resolve-threads`.
+This is an alias for `update-and-resolve-threads`.
 
-Invoke `update-and-resolve-threads` with the user's requested selection. Default to all unresolved threads when no subset is requested. Pass every subset constraint through unchanged; never silently broaden it.
-
-This alias always uses final verdicts and resolves only the threads whose replies were successfully published. Use `reply-to-threads` directly when replies should remain unresolved, including proposal workflows.
+Invoke `update-and-resolve-threads` with the user's requested selection. If it is not available, stop and ask the operator to install it.
