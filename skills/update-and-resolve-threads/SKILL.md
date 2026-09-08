@@ -1,6 +1,6 @@
 ---
 name: update-and-resolve-threads
-version: 0.1.0
+version: 0.1.1
 description: Post final verdict replies and resolve PR review threads in one workflow. Handles all unresolved threads by default or a requested subset. Use when the user says "update and resolve threads", "reply and resolve comments", or wants review decisions published and finalized together.
 ---
 
@@ -8,7 +8,8 @@ description: Post final verdict replies and resolve PR review threads in one wor
 
 Publish final verdicts, then resolve the same review threads:
 
-1. Invoke `update-threads` in **final** mode with the user's requested selection, defaulting to all unresolved threads.
-2. Only after its managed review is submitted successfully, invoke `resolve-threads` with the exact thread IDs that `update-threads` successfully updated.
+1. Determine the selection once, using the user's requested subset or all unresolved threads by default. Never silently broaden a requested subset.
+2. Invoke `post-replies` in **final** mode with that exact selection.
+3. Only after its managed review is submitted successfully, invoke `resolve-threads` with the exact thread IDs that `post-replies` successfully updated.
 
 Do not recompute or broaden the selection between steps. Leave skipped, unselected, or unsuccessfully updated threads unresolved, and report them in the final result.

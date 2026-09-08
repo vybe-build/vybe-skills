@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# Keep these stable so an interrupted update-threads run from before the skill
+# split can be resumed without duplicating replies.
 MANAGED_REVIEW_MARKER='<!-- update-threads-managed-review -->'
 
 require_review_tools() {
