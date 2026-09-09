@@ -10,7 +10,7 @@ Fetch unresolved PR review comments and immediately apply fixes for valid concer
 
 ## Steps
 
-1. Reuse the latest `/review-comments` results from this conversation when they are for the same repository and PR, include the underlying thread IDs, comments, and verdicts, and no intervening activity indicates the review is stale. Honor subsequent operator corrections. When eligible, skip fetching and re-running the analysis. If results are missing, incomplete, for another PR, or stale (for example, a new review round has completed), or the user explicitly requests fresh comments, invoke `/review-comments` instead. If only the target PR is uncertain, verify its identity without fetching comments.
+1. Reuse recent `/review-comments` results for the same PR when thread IDs, comments, and verdicts are available and current, incorporating operator corrections. Otherwise, or if a fresh review is requested, invoke `/review-comments`.
 2. For each thread with a **Fix now** verdict, apply the fix directly to the code — do not pause to ask for confirmation
 3. Report which threads were fixed and which were skipped (with their verdicts)
 

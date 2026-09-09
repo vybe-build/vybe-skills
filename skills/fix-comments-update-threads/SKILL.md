@@ -10,6 +10,6 @@ Run the full review-comment loop: fetch, fix, push, and resolve.
 
 ## Steps
 
-1. Invoke `/review-comments-and-fix`, passing any recent `/review-comments` results and operator corrections from this conversation. Reuse eligible results under that skill's rules instead of fetching and analyzing the comments again, then apply fixes for **Fix now** items.
+1. Invoke `/review-comments-and-fix`.
 2. If any fixes were applied, invoke the `/commit-and-push` skill to commit and push them — so the resolved threads point at real code on the PR
 3. Invoke `/update-threads` with the exact underlying thread IDs and final decisions from step 1 to reply and resolve the successfully updated threads. Its pre-reply reconciliation still checks which selected threads remain open; do not broaden the selection to newly discovered threads.
