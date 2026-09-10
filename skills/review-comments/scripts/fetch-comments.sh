@@ -5,6 +5,8 @@ set -euo pipefail
 # Requires: gh CLI (authenticated with repo access), jq, and awk.
 # Output: JSON object with PR metadata and a "threads" array of unresolved
 #         review threads with all comments in each thread.
+#         Each comment includes the first 50 reactions, their authors, the
+#         total reaction count, and whether additional reactions exist.
 
 if ! PR_NUMBER=$(gh pr view --json number --jq '.number'); then
   echo "Error: No PR found for the current branch." >&2
@@ -45,6 +47,14 @@ query($owner: String!, $repo: String!, $pr: Int!, $cursor: String) {
               originalCommit { abbreviatedOid oid }
               path
               outdated
+              reactions(first: 50) {
+                totalCount
+                pageInfo { hasNextPage }
+                nodes {
+                  content
+                  user { login }
+                }
+              }
             }
           }
         }
@@ -125,7 +135,15 @@ jq -n \
             commit_full: .commit.oid,
             original_commit: .originalCommit.abbreviatedOid,
             file: .path,
-            outdated: .outdated
+            outdated: .outdated,
+            reaction_count: .reactions.totalCount,
+            reactions_has_next_page: .reactions.pageInfo.hasNextPage,
+            reactions: [
+              .reactions.nodes[] | {
+                content: .content,
+                author: (.user.login // "ghost")
+              }
+            ]
           }
         ]
       }

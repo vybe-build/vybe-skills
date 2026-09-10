@@ -1,6 +1,6 @@
 ---
 name: review-comments
-version: 1.1.3
+version: 1.1.4
 description: Fetch and analyze unresolved PR review comments for the current branch. Use when the user says "review comments", "PR comments", "PR feedback", "check comments", "address feedback", or wants to see and triage unresolved review comments on their pull request.
 allowed-tools: Bash(bash *.claude/skills/review-comments/scripts/*), Bash(gh pr view *), Read
 ---
