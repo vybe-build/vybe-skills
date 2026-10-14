@@ -1,57 +1,68 @@
 ---
 name: wait-for-reviews
-version: 1.1.1
-description: Wait until a PR's CI checks and automated reviews (Claude, Greptile) have finished, up to a timeout. Use when the user says "wait for CI", "wait for reviews", "wait until checks pass", "block until the PR is reviewed", or wants to pause before the next round of work on a PR. Handles only the waiting — compose with fix/review skills for what comes next.
+version: 2.0.0
+description: Wait until a PR's CI checks and automated reviews have finished, using the repo's own documented signal for when a review is done, up to a timeout. Use when the user says "wait for CI", "wait for reviews", "wait until checks pass", "block until the PR is reviewed", or wants to pause before the next round of work on a PR. Handles only the waiting — compose with fix/review skills for what comes next.
 allowed-tools: Bash(bash *.claude/skills/wait-for-reviews/scripts/*), Bash(gh pr view *), Bash(gh repo view *)
 ---
 
 # Wait for Reviews
 
-Block until a PR is ready for the next round of implementation — every CI check
-has finished (pass or fail) and the automated reviewers have posted their
-verdicts — or until a timeout (default 30 minutes) is reached.
+Block until every CI check on a PR has finished (pass or fail) and the repo's
+automated reviewers are done, or until a timeout (default 30 minutes).
 
-This skill **only waits**. It does not fix comments, reply to threads, or push
-anything.
+This skill **only waits** — it does not fix, reply, or push. No reviewers are
+built in.
 
-## How "ready" is defined
+## Review signals
 
-1. **CI** — no check is still running. Every check has settled into success,
-   failure, skipped, or cancelled.
-2. **Automated reviews** — the `request-reviews` skill posts two trigger
-   comments, `/claude-review` and `@greptileai`. Each reviewer adds a 👍 (+1)
-   reaction to its trigger comment when it finishes. Only the **latest** trigger
-   comment of each kind is checked, since reviews can be requested repeatedly. A
-   reviewer that was never triggered is treated as done.
+The script waits on CI plus whichever of these it is given, one per reviewer:
+
+| Flag | Done when |
+|------|-----------|
+| `--reaction-on '<regex>'` | The latest PR comment matching the regex has a 👍 (`--reaction <name>` for another reaction). No matching comment counts as done. |
+| `--review-by <login>` | That account has reviewed the PR's current head commit. |
+
+With no flags it waits on CI only, which also covers reviewers that report
+through a check.
 
 ## Workflow
 
-1. Verify the resolved PR is the one intended for this conversation (if that
-   context is available), and flag it to the user if it looks like it's for a
-   different workstream — before blocking, potentially for the full timeout.
+1. If the PR looks like it belongs to a different workstream than this
+   conversation, flag it to the user before blocking.
 
-2. Run the wait script **in the background** so the loop polls without occupying
-   the agent. The harness re-invokes the agent when the script exits.
+2. Find how this repo's reviewers signal they are done, stopping at the first
+   source that states it:
+   1. This conversation (the user said so, or an earlier run established it).
+   2. Loaded instructions and memory (`CLAUDE.md`, `AGENTS.md`, etc.).
+   3. Repo docs: `CONTRIBUTING.md`, `README.md`, the `.github/` PR template,
+      `docs/`.
+
+   Knowing how reviews are *requested* is not enough — do not assume a
+   reviewer reacts to its trigger, and do not infer a signal from past PR
+   activity or installed apps.
+
+3. If it is missing or ambiguous, ask the user before waiting (CI only is a
+   valid answer), then offer to save the answer to memory or the repo's agent
+   instructions. If a signal fits neither flag, say so and wait on the rest.
+
+4. Run the script with `run_in_background: true`; it does its own polling, so
+   do not poll from the agent.
 
    ```bash
-   bash <skill-path>/scripts/pr-review-wait.sh [PR_NUMBER] [TIMEOUT_SECONDS] [INTERVAL_SECONDS]
+   bash <skill-path>/scripts/pr-review-wait.sh [SIGNALS...] [PR_NUMBER] [TIMEOUT_SECONDS] [INTERVAL_SECONDS]
    ```
 
-   - With no `PR_NUMBER`, it resolves the PR for the current branch.
-   - Defaults: `TIMEOUT_SECONDS=1800` (30 min), `INTERVAL_SECONDS=30`.
-   - Use `--once` (`pr-review-wait.sh --once [PR_NUMBER]`) for a single check with
-     no waiting — handy for a quick status read.
-
-   Set `run_in_background: true` on the Bash tool call. Do **not** poll with the
-   agent in the loop; the script already handles the sleep/check cycle.
+   - Anchor each regex so it matches only the request comment, e.g.
+     `--reaction-on '^/some-review-command'`.
+   - `PR_NUMBER` defaults to the current branch's PR; `TIMEOUT_SECONDS` to
+     1800; `INTERVAL_SECONDS` to 30.
+   - `--once` as the first argument does a single check with no waiting.
 
 ## Acting on the result
 
-When the background command finishes, branch on its exit code:
-
 | Exit | Meaning | What to do |
 |------|---------|------------|
-| `0` | Ready — CI and automated reviews are done | Report ready. The caller can proceed to the next step. |
-| `124` | Timed out before becoming ready | Tell the user it timed out and show which items (from the script output) were still pending. |
-| `2` | Lookup error — no PR found, or `gh` not authenticated | Surface the error; do not retry blindly. |
-| `1` | Not ready | Only returned by `--once`. The polling loop never exits `1`. |
+| `0` | Ready | Report ready; the caller can proceed. |
+| `124` | Timed out | Report it and show which items in the script output were still pending. |
+| `2` | Usage or lookup error (bad arguments, no PR, `gh` not authenticated) | Surface the error; do not retry blindly. |
+| `1` | Not ready | Only returned by `--once`. |

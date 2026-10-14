@@ -4,36 +4,84 @@
 #
 # A PR is "ready for the next round of implementation" when:
 #   1. Every CI check has finished (success OR failure — nothing still running).
-#   2. The automated reviewers have finished. The request-reviews skill posts
-#      two trigger comments, `/claude-review` and `@greptileai`. Each reviewer
-#      adds a 👍 (+1) reaction to its trigger comment when it is done reviewing.
-#      Reviews can be requested multiple times, so we only look at the LATEST
-#      trigger comment of each kind.
+#   2. Every review signal the caller asked for has fired. How a reviewer signals
+#      that it is done is repo-specific, so the signals are supplied by the
+#      caller (from the repo's docs, memory, or the user) — none are built in.
+#      With no signals, only CI is waited on.
+#
+# Review signals (each may be repeated):
+#   --reaction-on REGEX   The latest PR comment whose body matches REGEX has the
+#                         done-reaction on it. For reviewers that react to their
+#                         trigger comment when finished. Reviews can be requested
+#                         multiple times, so only the LATEST match is checked; if
+#                         no comment matches, no review was requested and the
+#                         signal is treated as done.
+#   --review-by LOGIN     LOGIN has submitted a review on the PR's current head
+#                         commit. A trailing "[bot]" on either side is ignored.
+#   --reaction NAME       The done-reaction for --reaction-on (default: +1).
+#                         One of: +1 -1 laugh confused heart hooray rocket eyes.
 #
 # Usage:
-#   pr-review-wait.sh [PR_NUMBER] [TIMEOUT_SECONDS] [INTERVAL_SECONDS]
-#   pr-review-wait.sh --once [PR_NUMBER]      # single check, print verdict, no waiting
+#   pr-review-wait.sh [SIGNALS...] [PR_NUMBER] [TIMEOUT_SECONDS] [INTERVAL_SECONDS]
+#   pr-review-wait.sh --once [SIGNALS...] [PR_NUMBER]   # single check, no waiting
 #
 # With no PR number it resolves the PR for the current branch.
 # Defaults: TIMEOUT=1800 (30 min), INTERVAL=30.
 #
 # Exit codes:
-#   0   = ready (CI + automated reviews are done)
+#   0   = ready (CI + requested review signals are done)
 #   1   = not ready yet   (only returned by --once; the polling loop never exits 1)
 #   2   = usage / lookup error (no PR, gh not authenticated, etc.)
 #   124 = timed out waiting for the PR to become ready
 
 set -euo pipefail
 
-ONCE=0
-if [[ "${1:-}" == "--once" ]]; then
-  ONCE=1
-  shift
-fi
+usage_error() {
+  echo "error: $1" >&2
+  echo "usage: pr-review-wait.sh [--once] [--reaction-on REGEX]... [--review-by LOGIN]... [--reaction NAME] [PR_NUMBER] [TIMEOUT_SECONDS] [INTERVAL_SECONDS]" >&2
+  exit 2
+}
 
-PR="${1:-}"
-TIMEOUT="${2:-1800}"
-INTERVAL="${3:-30}"
+ONCE=0
+REACTION="+1"
+REACTION_PATTERNS=()
+REVIEWERS=()
+POSITIONAL=()
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --once) ONCE=1; shift ;;
+    --reaction-on|--review-by|--reaction)
+      [[ $# -ge 2 && -n "$2" ]] || usage_error "$1 needs a value"
+      case "$1" in
+        --reaction-on) REACTION_PATTERNS+=("$2") ;;
+        --review-by)   REVIEWERS+=("$2") ;;
+        --reaction)    REACTION="$2" ;;
+      esac
+      shift 2 ;;
+    --*) usage_error "unknown option: $1" ;;
+    *) POSITIONAL+=("$1"); shift ;;
+  esac
+done
+
+case "$REACTION" in
+  +1|-1|laugh|confused|heart|hooray|rocket|eyes) ;;
+  *) usage_error "unknown reaction: $REACTION" ;;
+esac
+
+[[ ${#POSITIONAL[@]} -le 3 ]] || usage_error "too many arguments"
+PR="${POSITIONAL[0]:-}"
+TIMEOUT="${POSITIONAL[1]:-1800}"
+INTERVAL="${POSITIONAL[2]:-30}"
+
+[[ -z "$PR" || "$PR" =~ ^[0-9]+$ ]] || usage_error "PR_NUMBER must be a number"
+[[ "$TIMEOUT" =~ ^[0-9]+$ ]] || usage_error "TIMEOUT_SECONDS must be a number"
+[[ "$INTERVAL" =~ ^[1-9][0-9]*$ ]] || usage_error "INTERVAL_SECONDS must be a positive number"
+
+for pattern in ${REACTION_PATTERNS[@]+"${REACTION_PATTERNS[@]}"}; do
+  jq -n --arg re "$pattern" '"" | test($re)' >/dev/null 2>&1 \
+    || usage_error "invalid --reaction-on regex: $pattern"
+done
 
 if [[ -z "$PR" ]]; then
   PR="$(gh pr view --json number --jq '.number' 2>/dev/null || true)"
@@ -49,20 +97,42 @@ if [[ -z "$REPO" ]]; then
   exit 2
 fi
 
-# latest_plus1 <regex>  ->  prints "MISSING" | "WAITING" | "DONE"
-#   MISSING: no trigger comment of this kind exists (no review was requested)
-#   WAITING: latest trigger comment has no 👍 yet
-#   DONE:    latest trigger comment has a 👍
-latest_plus1() {
+# fetch_all <api-path>  ->  prints every page merged into one JSON array.
+# Returns non-zero if the request fails, so a failed fetch is never mistaken
+# for "nothing there".
+fetch_all() {
+  local out
+  out="$(gh api --paginate "$1?per_page=100" 2>/dev/null)" || return 1
+  jq -s 'add // []' <<<"$out"
+}
+
+# latest_reaction <regex> <comments-json>  ->  prints "MISSING" | "WAITING" | "DONE"
+#   MISSING: no comment matches (no review was requested)
+#   WAITING: latest matching comment has no done-reaction yet
+#   DONE:    latest matching comment has the done-reaction
+latest_reaction() {
   local pattern="$1" comments_json="$2"
-  jq -r --arg re "$pattern" '
-    [ .[] | select(.body | test($re)) ]
+  jq -r --arg re "$pattern" --arg reaction "$REACTION" '
+    [ .[] | select((.body // "") | test($re)) ]
     | sort_by(.created_at)
     | last
     | if . == null then "MISSING"
-      elif (.reactions["+1"] // 0) > 0 then "DONE"
+      elif (.reactions[$reaction] // 0) > 0 then "DONE"
       else "WAITING" end
   ' <<<"$comments_json"
+}
+
+# reviewed_head <login> <head-sha> <reviews-json>  ->  prints "DONE" | "WAITING"
+reviewed_head() {
+  local login="$1" head="$2" reviews_json="$3"
+  jq -r --arg login "$login" --arg head "$head" '
+    def norm: ascii_downcase | sub("\\[bot\\]$"; "");
+    if any(.[];
+         ((.user.login // "") | norm) == ($login | norm)
+         and .commit_id == $head
+         and .state != "PENDING")
+    then "DONE" else "WAITING" end
+  ' <<<"$reviews_json"
 }
 
 # check_ready  ->  0 = ready, 1 = not ready.  Prints a human-readable status block.
@@ -91,21 +161,45 @@ check_ready() {
     echo "$pending_names"
   fi
 
-  # --- 2. Automated reviews -------------------------------------------------
-  local comments_json
-  comments_json="$(gh api --paginate "repos/$REPO/issues/$PR/comments" 2>/dev/null || echo '[]')"
+  # --- 2. Review signals ----------------------------------------------------
+  if [[ ${#REACTION_PATTERNS[@]} -eq 0 && ${#REVIEWERS[@]} -eq 0 ]]; then
+    echo "✓ Reviews: no review signals requested (CI only)"
+  fi
 
-  local label pattern status
-  for spec in "Claude:^/claude-review" "Greptile:^@greptileai"; do
-    label="${spec%%:*}"
-    pattern="${spec#*:}"
-    status="$(latest_plus1 "$pattern" "$comments_json")"
-    case "$status" in
-      DONE)    echo "✓ $label: review complete (👍 on latest request)" ;;
-      WAITING) echo "… $label: reviewing (no 👍 on latest request yet)"; reviews_ready=0 ;;
-      MISSING) echo "✓ $label: no review requested (treated as done)" ;;
-    esac
-  done
+  local status
+  if [[ ${#REACTION_PATTERNS[@]} -gt 0 ]]; then
+    local comments_json pattern
+    if comments_json="$(fetch_all "repos/$REPO/issues/$PR/comments")"; then
+      for pattern in "${REACTION_PATTERNS[@]}"; do
+        status="$(latest_reaction "$pattern" "$comments_json")"
+        case "$status" in
+          DONE)    echo "✓ $pattern: review complete ($REACTION on latest request)" ;;
+          WAITING) echo "… $pattern: reviewing (no $REACTION on latest request yet)"; reviews_ready=0 ;;
+          MISSING) echo "✓ $pattern: no review requested (treated as done)" ;;
+        esac
+      done
+    else
+      echo "… could not fetch PR comments; will retry"
+      reviews_ready=0
+    fi
+  fi
+
+  if [[ ${#REVIEWERS[@]} -gt 0 ]]; then
+    local head reviews_json login
+    head="$(gh pr view "$PR" --json headRefOid --jq '.headRefOid' 2>/dev/null || true)"
+    if [[ -n "$head" ]] && reviews_json="$(fetch_all "repos/$REPO/pulls/$PR/reviews")"; then
+      for login in "${REVIEWERS[@]}"; do
+        status="$(reviewed_head "$login" "$head" "$reviews_json")"
+        case "$status" in
+          DONE)    echo "✓ $login: reviewed ${head:0:7}" ;;
+          WAITING) echo "… $login: no review on ${head:0:7} yet"; reviews_ready=0 ;;
+        esac
+      done
+    else
+      echo "… could not fetch PR reviews; will retry"
+      reviews_ready=0
+    fi
+  fi
 
   [[ "$ci_ready" -eq 1 && "$reviews_ready" -eq 1 ]]
 }

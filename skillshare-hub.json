@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-08T04:55:02Z",
+  "generatedAt": "2026-10-13T05:03:11Z",
   "sourcePath": "github.com/vybe-build/vybe-skills",
   "skills": [
     {
@@ -105,7 +105,7 @@
     },
     {
       "name": "request-reviews",
-      "description": "Post comments to the current PR to trigger re-reviews from Claude and Greptile. Use when the user says \"request reviews\", \"re-review\", \"trigger reviews\", or wants reviewers to look at the PR again.",
+      "description": "Request (re-)review on the current PR using the repo's own documented procedure, asking the user when none is documented. Use when the user says \"request reviews\", \"re-review\", \"trigger reviews\", or wants reviewers to look at the PR again.",
       "source": "skills/request-reviews"
     },
     {
@@ -145,7 +145,7 @@
     },
     {
       "name": "wait-for-reviews",
-      "description": "Wait until a PR's CI checks and automated reviews (Claude, Greptile) have finished, up to a timeout. Use when the user says \"wait for CI\", \"wait for reviews\", \"wait until checks pass\", \"block until the PR is reviewed\", or wants to pause before the next round of work on a PR. Handles only the waiting — compose with fix/review skills for what comes next.",
+      "description": "Wait until a PR's CI checks and automated reviews have finished, using the repo's own documented signal for when a review is done, up to a timeout. Use when the user says \"wait for CI\", \"wait for reviews\", \"wait until checks pass\", \"block until the PR is reviewed\", or wants to pause before the next round of work on a PR. Handles only the waiting — compose with fix/review skills for what comes next.",
       "source": "skills/wait-for-reviews"
     }
   ]
