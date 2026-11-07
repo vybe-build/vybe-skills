@@ -1,6 +1,6 @@
 ---
 name: wait-for-reviews
-version: 2.0.0
+version: 2.0.1
 description: Wait until a PR's CI checks and automated reviews have finished, using the repo's own documented signal for when a review is done, up to a timeout. Use when the user says "wait for CI", "wait for reviews", "wait until checks pass", "block until the PR is reviewed", or wants to pause before the next round of work on a PR. Handles only the waiting — compose with fix/review skills for what comes next.
 allowed-tools: Bash(bash *.claude/skills/wait-for-reviews/scripts/*), Bash(gh pr view *), Bash(gh repo view *)
 ---
@@ -23,7 +23,8 @@ The script waits on CI plus whichever of these it is given, one per reviewer:
 | `--review-by <login>` | That account has reviewed the PR's current head commit. |
 
 With no flags it waits on CI only, which also covers reviewers that report
-through a check.
+through a check. Graphite's `Graphite / mergeability_check` is ignored, since
+it stays pending until downstack PRs merge.
 
 ## Workflow
 
