@@ -4,6 +4,9 @@
 #
 # A PR is "ready for the next round of implementation" when:
 #   1. Every CI check has finished (success OR failure — nothing still running).
+#      Graphite's "Graphite / mergeability_check" is ignored: it stays pending
+#      until the stack is mergeable (e.g. downstack PRs merge), which is not
+#      something a review round can wait out.
 #   2. Every review signal the caller asked for has fired. How a reviewer signals
 #      that it is done is repo-specific, so the signals are supplied by the
 #      caller (from the repo's docs, memory, or the user) — none are built in.
@@ -97,6 +100,11 @@ if [[ -z "$REPO" ]]; then
   exit 2
 fi
 
+# Checks that never settle within a review round and are skipped when waiting
+# on CI. Graphite's mergeability check stays pending while downstack PRs are
+# unmerged, so waiting on it would always time out.
+IGNORED_CHECKS='["Graphite / mergeability_check"]'
+
 # fetch_all <api-path>  ->  prints every page merged into one JSON array.
 # Returns non-zero if the request fails, so a failed fetch is never mistaken
 # for "nothing there".
@@ -148,6 +156,10 @@ check_ready() {
   local checks_json
   checks_json="$(gh pr checks "$PR" --json name,bucket 2>/dev/null)" || true
   [[ -z "$checks_json" ]] && checks_json='[]'
+
+  # Drop checks that are not CI results (see IGNORED_CHECKS).
+  checks_json="$(jq --argjson ignored "$IGNORED_CHECKS" \
+    '[ .[] | select(.name as $n | $ignored | index($n) | not) ]' <<<"$checks_json")"
 
   local pending_count pending_names
   pending_count="$(jq '[.[] | select(.bucket == "pending")] | length' <<<"$checks_json")"
