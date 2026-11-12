@@ -23,7 +23,9 @@ Run the fetch script:
 bash <skill-path>/scripts/fetch-comments.sh
 ```
 
-If there are no unresolved threads, report that and stop.
+Also read the review's summary comment (usually pinned), using `gh pr view --comments` or `gh pr view --json comments,reviews`. Include its overall assessment and any actionable concerns that are not repeated in inline threads in your analysis.
+
+If there are no unresolved threads or actionable concerns in the summary, report that and stop.
 
 ### 3. Read relevant source files
 
