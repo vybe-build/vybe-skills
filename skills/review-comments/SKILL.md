@@ -1,6 +1,6 @@
 ---
 name: review-comments
-version: 1.1.4
+version: 1.1.5
 description: Fetch and analyze unresolved PR review comments for the current branch. Use when the user says "review comments", "PR comments", "PR feedback", "check comments", "address feedback", or wants to see and triage unresolved review comments on their pull request.
 allowed-tools: Bash(bash *.claude/skills/review-comments/scripts/*), Bash(gh pr view *), Read
 ---
@@ -23,7 +23,9 @@ Run the fetch script:
 bash <skill-path>/scripts/fetch-comments.sh
 ```
 
-If there are no unresolved threads, report that and stop.
+Also read the review's summary comment (usually pinned), using `gh pr view --comments` or `gh pr view --json comments,reviews`. Include its overall assessment and any actionable concerns that are not repeated in inline threads in your analysis.
+
+If there are no unresolved threads or actionable concerns in the summary, report that and stop.
 
 ### 3. Read relevant source files
 
