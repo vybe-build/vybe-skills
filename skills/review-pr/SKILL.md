@@ -1,6 +1,6 @@
 ---
 name: review-pr
-version: 1.3.0
+version: 1.4.0
 description: Deep multi-dimensional code review for a pull request
 allowed-tools: Bash(gh issue view:*), Bash(gh search:*), Bash(gh issue list:*), Bash(gh pr comment:*), Bash(gh pr diff:*), Bash(gh pr view:*), Bash(gh pr list:*), Bash(gh api:*), Bash(bash *.claude/skills/review-pr/scripts/*), Bash(echo *), Bash(date *), Bash(jq *), Bash(git fetch *), Bash(git show *), Bash(git diff *), Bash(git log *), Bash(git branch --list *), Write(.claude-scratch/*), Write(/.claude-scratch/*), Write(//**/.claude-scratch/*)
 ---
@@ -72,6 +72,8 @@ Follow these steps precisely:
 
 6. Synthesize all agent results into the output format below. Calculate the overall score as the simple average of all 9 category scores. Apply verdict logic: 🚫 DO NOT MERGE if ANY 🚫 BLOCKING issue exists across any category. ✅ READY TO MERGE otherwise.
 
+   **Failed agents.** A review agent failed if it errored, ran out of usage or hit a rate limit, or returned no category score. Never fill in a failed agent's category yourself. If any agent failed, the verdict is ⚠️ INCOMPLETE, even when the agents that finished found nothing: show `—` as that category's score with status `⚠️ Not reviewed`, write `**Overall Score: —**`, and still list the findings from the agents that finished. Never output ✅ READY TO MERGE for an incomplete review.
+
 7. Post the review using the helper scripts:
 
    a. **Write findings to a JSON file.** Create `.claude-scratch/review-comments.json` with an array of comment objects. Each finding with a specific file path becomes a comment:
@@ -123,8 +125,8 @@ Follow these steps precisely:
    d. **Fallback.** If the inline comment script fails entirely (non-zero exit), include ALL findings in the summary comment body instead.
 
    e. **React to indicate completion.** If a trigger comment ID was parsed in step 0, react to signal the outcome:
-      - On success (summary posted): `bash <skill-path>/scripts/react-to-comment.sh "<COMMENT_ID>" "+1"`
-      - On failure (could not post summary): `bash <skill-path>/scripts/react-to-comment.sh "<COMMENT_ID>" "-1"`
+      - On success (summary posted and the verdict is not ⚠️ INCOMPLETE): `bash <skill-path>/scripts/react-to-comment.sh "<COMMENT_ID>" "+1"`
+      - On failure (could not post summary, or the verdict is ⚠️ INCOMPLETE): `bash <skill-path>/scripts/react-to-comment.sh "<COMMENT_ID>" "-1"`
 
 Examples of false positives — avoid flagging these in step 4:
 
@@ -159,7 +161,7 @@ For the top-level PR comment, use this format precisely:
 
 ### 🔍 Code Review
 
-#### 🚦 Verdict: ✅ READY TO MERGE / 🚫 DO NOT MERGE
+#### 🚦 Verdict: ✅ READY TO MERGE / 🚫 DO NOT MERGE / ⚠️ INCOMPLETE
 
 **Overall Score: X.X/5**
 
